@@ -110,31 +110,31 @@
 
     <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
 	
-	<audio id="audio-bip" src="https://freesound.org/data/previews/80/80921_1022651-lq.mp3" preload="auto"></audio>
+	
 	<!-- SOM DO BIP-->
 	<script>
 	function tocarSomBeepLocal() {
-    const audioBip = document.getElementById('audio-bip');
-    if (audioBip) {
-        audioBip.currentTime = 0; // Reinicia o áudio caso tenha sido bipado rapidamente em sequência
-        audioBip.play().catch(error => {
-            console.log("Aguardando interação do usuário na página para liberar o áudio.", error);
-        });
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        // Frequência de bipe agudo de leitor de supermercado (1800 Hz)
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(1800, audioCtx.currentTime);
+
+        // Volume controlado para não estourar
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.08); // Duração de 80 milissegundos
+    } catch (e) {
+        console.log("Erro ao gerar som:", e);
     }
 }
-
-// Corrigido de "nputCodigo" para "inputCodigo"
-inputCodigo.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        
-        // CHAMA O SOM DO BIP AQUI
-        tocarSomBeepLocal(); 
-
-        processBarcode(inputCodigo.value);
-    }
-});
-		
 
 </script>
 
