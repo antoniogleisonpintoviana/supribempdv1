@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema PDV - Supribem</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pdv-purple': '#2e0835',
+                        'pdv-dark-purple': '#1e0423',
+                        'pdv-light-purple': '#481352',
+                        'pdv-cream': '#fffbf0',
+                        'pdv-pill': '#f3f0e6',
+                        'pdv-border-red': '#8c2637',
+                        'pdv-logo-orange': '#bd4f24'
+                    },
+                    fontFamily: {
+                        sans: ['Ubuntu', 'sans-serif'],
+                        receipt: ['Courier Prime', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            background-color: #1e0423;
+            color: white;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        /* Background blur overlay simulating supermarket aisle */
+        .aisle-bg {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(46, 8, 53, 0.85)), url('https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Custom Capsule Inputs */
+        .capsule-input {
+            background-color: #f3f0e8;
+            border-radius: 9999px;
+            color: #222222;
+            font-weight: 700;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(255,255,255,0.2);
+            transition: all 0.15s ease-in-out;
+        }
+
+        .capsule-input:focus-within {
+            outline: 3px solid #ffcc00;
+            background-color: #ffffff;
+        }
+
+        .capsule-input input {
+            background: transparent;
+            outline: none;
+            color: #111;
+            font-weight: bold;
+        }
+
+        /* Logo Oval Frame */
+        .logo-ellipse {
+            background: radial-gradient(circle, #222 0%, #111 100%);
+            border: 6px solid #d35400;
+            border-radius: 50% / 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            transform: rotate(-3deg);
+        }
+
+        /* Custom Scrollbar for Receipt Paper */
+        .receipt-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .receipt-scroll::-webkit-scrollbar-track {
+            background: #f7f3e6;
+            border-radius: 4px;
+        }
+        .receipt-scroll::-webkit-scrollbar-thumb {
+            background: #c2bba8;
+            border-radius: 4px;
+        }
+
+        /* Pulse highlight animation for new scanned items */
+        @keyframes itemFlash {
+            0% { background-color: #ffe680; }
+            100% { background-color: transparent; }
+        }
+        .item-row-new {
+            animation: itemFlash 0.8s ease-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen text-white select-none">
+
+<body class="flex flex-col h-screen text-white select-none">
+
+    <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
+	
+	
+	<!-- SOM DO BIP-->
+	<script>
+	function tocarSomBeepLocal() {
+    const audioBip = document.getElementById('audio-bip');
+    if (audioBip) {
+        audioBip.currentTime = 0; // Reinicia o áudio caso tenha sido bipado rapidamente em sequência
+        audioBip.play().catch(error => {
+            console.log("Aguardando interação do usuário na página para liberar o áudio.", error);
+        });
+    }
+}
+
+// Corrigido de "nputCodigo" para "inputCodigo"
+inputCodigo.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        
+        // CHAMA O SOM DO BIP AQUI
+        tocarSomBeepLocal(); 
+
+        processBarcode(inputCodigo.value);
+    }
+});
+
+</script>
+
+    <!-- Restante do seu código HTML... -->
+
+    <!-- TOP BAR -->
+    <header class="bg-pdv-purple px-4 py-2 border-b border-purple-900 flex items-center justify-between text-xs md:text-sm font-bold tracking-wide">
+        <div class="flex items-center space-x-2">
+            <span class="text-gray-300">Data / Hora Atual:</span>
+            <span id="live-clock" class="text-white font-mono text-sm bg-purple-950 px-2 py-0.5 rounded border border-purple-700">--/--/---- --:--:--</span>
+        </div>
+
+        <div class="flex items-center space-x-4 md:space-x-8">
+            <div class="flex items-center space-x-1">
+                <span class="text-gray-300">Coo Cupom:</span>
+                <span id="coo-val" class="text-white font-mono">084920</span>
+            </div>
+
+            <div class="flex items-center space-x-1">
+                <span class="text-gray-300">Códgos POV/DAV:</span>
+                <span id="pov-dav-val" class="text-white font-mono">1029</span>
+            </div>
+
+            <div class="flex items-center space-x-1">
+                <span class="text-gray-300">NFC-e Cupom</span>
+            </div>
+
+            <!-- Top Wide Pill Bar -->
+            <div class="capsule-input px-4 py-1.5 w-64 md:w-96 flex items-center justify-between">
+                <span class="text-gray-500 font-normal text-xs">Consulta / Status:</span>
+                <span class="text-green-700 text-xs font-bold uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> CAIXA ABERTO
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTENT -->
+    <div class="flex-1 grid grid-cols-12 gap-3 p-3 bg-pdv-dark-purple overflow-hidden">
+        
+        <!-- LEFT COLUMN (LOGO & TOTALS) -->
+        <div class="col-span-4 flex flex-col justify-between aisle-bg p-4 rounded-xl border border-purple-950 shadow-2xl relative overflow-hidden">
+            
+            <!-- BRAND LOGO BADGE -->
+            <div class="flex justify-center my-2">
+                <div class="logo-ellipse w-full max-w-[280px] py-4 px-6 text-center transform transition hover:scale-105 duration-200 cursor-pointer" onclick="focusBarcode()">
+                    <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-sans" style="font-family: Arial Black, sans-serif;">
+                        Supribem
+                    </h1>
+                    <p class="text-xs md:text-sm font-bold text-yellow-400 italic tracking-wider mt-0.5 drop-shadow">
+                        Economia pra valer!
+                    </p>
+                </div>
+            </div>
+
+            <!-- FINANCIAL SUMMARY CARDS -->
+            <div class="space-y-3 my-auto max-w-xs mx-auto w-full">
+                <!-- TOTAL DA COMPRA -->
+                <div>
+                    <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">TOTAL DA COMPRA</label>
+                    <div class="capsule-input px-4 py-2 text-center text-2xl md:text-3xl font-extrabold text-gray-900 shadow-md">
+                        <span class="text-sm font-semibold text-gray-500 mr-1">R$</span>
+                        <span id="disp-total-compra">0,00</span>
+                    </div>
+                </div>
+
+                <!-- PAGAMENTO -->
+                <div>
+                    <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">PAGAMENTO</label>
+                    <div class="capsule-input px-4 py-2 text-center text-2xl md:text-3xl font-extrabold text-gray-900 shadow-md flex items-center justify-center">
+                        <span class="text-sm font-semibold text-gray-500 mr-1">R$</span>
+                        <input id="input-pagamento" type="number" step="0.01" class="w-full text-center capsule-input p-0 border-none focus:ring-0" placeholder="0,00" oninput="calculateChange()">
+                    </div>
+                </div>
+
+                <!-- RESTANTE & TROCO ROW -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">RESTANTE</label>
+                        <div class="capsule-input px-2 py-1.5 text-center text-lg md:text-xl font-bold text-red-700 shadow-md">
+                            <span id="disp-restante">0,00</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">TROCO</label>
+                        <div class="capsule-input px-2 py-1.5 text-center text-lg md:text-xl font-bold text-green-700 shadow-md">
+                            <span id="disp-troco">0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOWER EXTRA WIDE CAPSULE FIELD -->
+            <div class="mt-4">
+                <div class="capsule-input px-4 py-2 text-center text-xs font-bold text-gray-700 shadow-lg border border-gray-300 flex items-center justify-between">
+                    <span id="status-message" class="truncate">CAIXA LIVRE - PRONTO PARA VENDAS</span>
+                    <i class="fa-solid fa-barcode text-gray-500 text-lg"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN (SCANNER INPUTS & RECEIPT PAPER) -->
+        <div class="col-span-8 flex flex-col space-y-3">
+            
+            <!-- TOP INPUT SCANNER BAR -->
+            <div class="bg-pdv-purple p-3 rounded-xl border border-purple-900 shadow-lg flex items-center justify-between space-x-2 text-xs font-bold">
+                
+                <!-- BARCODE / CODIGO INPUT -->
+                <div class="flex-1 flex flex-col">
+                    <label class="mb-1 text-gray-200 tracking-wider">CÓDIGO</label>
+                    <div class="capsule-input px-3 py-1.5 flex items-center space-x-2">
+                        <i class="fa-solid fa-barcode text-gray-700 text-xl"></i>
+                        <input id="input-codigo" type="text" class="w-full text-base font-mono uppercase tracking-wider" placeholder="Código ou Barcode" autocomplete="off" autofocus>
+                    </div>
+                </div>
+
+                <!-- QTD -->
+                <div class="w-20 flex flex-col">
+                    <label class="mb-1 text-center text-gray-200">QTD</label>
+                    <div class="capsule-input px-2 py-1.5 text-center">
+                        <input id="input-qtd" type="number" min="1" value="1" class="w-full text-center text-base font-bold">
+                    </div>
+                </div>
+
+                <div class="text-xl font-black text-gray-300 self-end pb-2">X</div>
+
+                <!-- PREÇO -->
+                <div class="w-28 flex flex-col">
+                    <label class="mb-1 text-center text-gray-200">PREÇO</label>
+                    <div class="capsule-input px-2 py-1.5 text-center">
+                        <input id="input-preco" type="text" readonly class="w-full text-center text-base font-bold text-gray-600 bg-transparent" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div class="text-xl font-black text-gray-300 self-end pb-2">=</div>
+
+                <!-- TOTAL ITEM -->
+                <div class="w-32 flex flex-col">
+                    <label class="mb-1 text-center text-gray-200">TOTAL</label>
+                    <div class="capsule-input px-3 py-1.5 text-center bg-gray-200">
+                        <span id="disp-item-total" class="text-base font-bold text-gray-800">0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECEIPT PAPER DISPLAY SHEET -->
+            <div class="flex-1 bg-pdv-cream text-gray-900 rounded-2xl p-4 shadow-2xl border-4 border-pdv-purple flex flex-col justify-between font-receipt relative overflow-hidden">
+                
+                <!-- PAPER HEADER -->
+                <div class="pb-2 border-b-2 border-pdv-border-red">
+                    <div class="flex justify-between items-center text-xs font-bold text-pdv-border-red uppercase tracking-wider mb-1">
+                        <span>ITEM &nbsp; CÓDIGO &nbsp; DESCRIÇÃO</span>
+                        <span>QTD x UNIT &nbsp; R$ TOTAL</span>
+                    </div>
+                    <div class="w-full border-t border-dashed border-pdv-border-red my-1"></div>
+                </div>
+
+                <!-- RECEIPT ITEMS LIST CONTAINER -->
+                <div id="receipt-items-container" class="flex-1 overflow-y-auto receipt-scroll py-2 space-y-1 text-xs md:text-sm font-semibold">
+                    <!-- Items inserted dynamically via JavaScript -->
+                    <div id="empty-receipt-msg" class="h-full flex flex-col items-center justify-center text-gray-400 italic">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-2 text-amber-200"></i>
+                        <span>Nenhum item registrado no cupom</span>
+                        <span class="text-xs text-gray-400 mt-1">Pressione F2 para ver lista de códigos de teste</span>
+                    </div>
+                </div>
+
+                <!-- PAPER FOOTER / DIVIDER LINES -->
+                <div class="pt-2 border-t-2 border-pdv-border-red mt-auto">
+                    <div class="flex justify-between text-xs font-bold text-pdv-border-red">
+                        <span id="items-count-label">TOTAL DE ITENS: 0</span>
+                        <span>SUBTOTAL</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold text-gray-900 mt-1">
+                        <span>SUPRIBEM SUPERMERCADOS</span>
+                        <span id="receipt-subtotal-val">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM STATUS BAR -->
+    <footer class="bg-pdv-purple border-t border-purple-900 px-3 py-2 text-[11px] md:text-xs text-gray-200 flex flex-wrap items-center justify-between gap-y-1">
+        
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
+            <i class="fa-solid fa-user-tie text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">OPERADOR:</span>
+            <span class="text-yellow-300">001 - CAIXA PRINCIPAL</span>
+        </div>
+
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
+            <i class="fa-solid fa-store text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">POV / ESTAÇÃO:</span>
+            <span>01 / 004</span>
+        </div>
+
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3 cursor-pointer hover:text-yellow-300" onclick="simulateSync('GERAL')">
+            <i class="fa-solid fa-cart-shopping text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">CARGA GERAL:</span>
+            <span id="carga-geral-status" class="text-green-400">OK</span>
+        </div>
+
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3 cursor-pointer hover:text-yellow-300" onclick="simulateSync('PARCIAL')">
+            <i class="fa-solid fa-database text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">CARGA PARCIAL:</span>
+            <span class="text-green-400">OK</span>
+        </div>
+
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3 cursor-pointer hover:text-yellow-300" onclick="simulateSync('CONFIG')">
+            <i class="fa-solid fa-gear text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">CARGA CONFIG:</span>
+            <span class="text-green-400">OK</span>
+        </div>
+
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
+            <i class="fa-solid fa-location-dot text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">ENDEREÇO IP:</span>
+            <span class="font-mono text-cyan-300">192.168.0.6</span>
+        </div>
+
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
+            <i class="fa-solid fa-print text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">IMPRESSORA:</span>
+            <span class="text-emerald-300 truncate max-w-[180px]">TANCA - TP-650 Operacional</span>
+        </div>
+
+        <div class="flex items-center space-x-1">
+            <i class="fa-solid fa-file-lines text-purple-300 text-sm mr-1"></i>
+            <span class="font-bold">VERSÃO:</span>
+            <span class="font-mono text-yellow-300">3.00.02</span>
+        </div>
+    </footer>
+
+    <!-- MODAL FOR PRODUCT HELP / SHORTCUTS -->
+    <div id="modal-help" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-pdv-purple border-2 border-yellow-400 rounded-2xl max-w-lg w-full p-6 text-white shadow-2xl">
+            <div class="flex justify-between items-center border-b border-purple-800 pb-3 mb-4">
+                <h3 class="text-lg font-bold text-yellow-400 flex items-center">
+                    <i class="fa-solid fa-basket-shopping mr-2"></i> Produtos de Teste (Atalhos)
+                </h3>
+                <button onclick="toggleHelpModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            
+            <p class="text-xs text-gray-300 mb-3">Digite qualquer um dos códigos abaixo ou simule a leitura de código de barras:</p>
+
+            <div class="space-y-2 mb-6 max-h-60 overflow-y-auto pr-1">
+                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001001')">
+                    <span class="font-mono text-yellow-300">78910001001</span>
+                    <span class="font-bold">ARROZ TIPO 1 5KG</span>
+                    <span class="text-green-400 font-bold">R$ 26,90</span>
+                </div>
+                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001002')">
+                    <span class="font-mono text-yellow-300">78910001002</span>
+                    <span class="font-bold">FEIJÃO CARIOCA 1KG</span>
+                    <span class="text-green-400 font-bold">R$ 7,50</span>
+                </div>
+                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001003')">
+                    <span class="font-mono text-yellow-300">78910001003</span>
+                    <span class="font-bold">LEITE INTEGRAL 1L</span>
+                    <span class="text-green-400 font-bold">R$ 4,89</span>
+                </div>
+                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001004')">
+                    <span class="font-mono text-yellow-300">78910001004</span>
+                    <span class="font-bold">Oleo de Soja 900ml</span>
+                    <span class="text-green-400 font-bold">R$ 6,29</span>
+                </div>
+                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001005')">
+                    <span class="font-mono text-yellow-300">78910001005</span>
+                    <span class="font-bold">CAFÉ TORRADO 500G</span>
+                    <span class="text-green-400 font-bold">R$ 16,90</span>
+                </div>
+            </div>
+
+            <div class="bg-purple-950 p-3 rounded-lg border border-purple-800 text-xs space-y-1 mb-4">
+                <p class="font-bold text-yellow-400">Atalhos do Teclado:</p>
+                <div class="grid grid-cols-2 gap-1 text-gray-300">
+                    <div><b class="text-white">F2:</b> Lista de Produtos</div>
+                    <div><b class="text-white">F4 / Enter no Pagamento:</b> Finalizar</div>
+                    <div><b class="text-white">F8:</b> Cancelar Último Item</div>
+                    <div><b class="text-white">Esc / F12:</b> Novo Cupom</div>
+                    <div><b class="text-white">Multiplicar:</b> Ex: <code class="bg-purple-900 px-1 text-yellow-300">3*78910001003</code></div>
+                </div>
+            </div>
+
+            <button onclick="toggleHelpModal()" class="w-full py-2 bg-yellow-500 hover:bg-yellow-400 text-purple-950 font-bold rounded-lg transition">
+                Fechar (ESC)
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+	
+	
+    <script>
+	
+        // MOCK PRODUCT DATABASE - ATUALIZADO COM A SUA LISTA OFICIAL
+const productsDB = {
+    // Mercearia Geral de Referência (mantidas para teste)
+    '78910001001': { name: 'ARROZ TIPO 1 5KG', price: 26.90 },
+    '78910001002': { name: 'FEIJÃO CARIOCA 1KG', price: 7.50 },
+    '78910001003': { name: 'LEITE INTEGRAL 1L', price: 4.89 },
+    '78910001004': { name: 'ÓLEO DE SOJA 900ML', price: 6.29 },
+
+    // Sua Lista Oficial de Hortifrúti
+    '1': { name: 'ABACATE KG', price: 8.49 },
+    '2': { name: 'ABACAXI UN', price: 8.99 },
+    '4': { name: 'ALHO KG', price: 24.90 },
+    '3': { name: 'ALFACE KG', price: 4.50 },
+    '7': { name: 'BANANA PRATA KG', price: 7.20 },
+    '8': { name: 'BETERRABA KG', price: 6.50 },
+    '9': { name: 'CEBOLA BRANCA KG', price: 5.99 },
+    '10': { name: 'CEBOLA ROCHA KG', price: 6.99 },
+    '19': { name: 'LIMÃO TAITI KG', price: 4.50 },
+    '18': { name: 'LARANJA KG', price: 4.89 },
+    '20': { name: 'MACAXEIRA KG', price: 6.20 },
+    '25': { name: 'INHAME KG', price: 9.50 },
+    '31': { name: 'PERA KG', price: 13.49 },
+    '14': { name: 'COCO SECO UN', price: 4.50 },
+    '15': { name: 'COCO VERDE UN', price: 4.00 },
+    '12': { name: 'COENTRO UN', price: 2.50 },
+    '56': { name: 'CEBOLINHA UN', price: 2.50 },
+    '13': { name: 'CHUCHU KG', price: 5.00 },
+    '34': { name: 'PIMENTÃO KG', price: 8.99 },
+    '49': { name: 'MAÇÃ NACIONAL KG', price: 11.99 },
+    '71': { name: 'COUVE MANTEGA UN', price: 3.00 },
+    '91': { name: 'GENGIBRE UN', price: 7.50 },
+    '66': { name: 'MANGA TOMY KG', price: 6.79 },
+    '26': { name: 'MANGA COITE / MOSCATEL KG', price: 6.50 },
+    '29': { name: 'MELÃO KG', price: 7.99 },
+    '57': { name: 'MELÃO ESPANHOL KG', price: 7.50 }
+};
+
+        // STATE VARIABLES
+        let currentCart = [];
+        let totalAmount = 0.00;
+        let cooNumber = 84920;
+
+        // DOM ELEMENTS
+        const clockEl = document.getElementById('live-clock');
+        const inputCodigo = document.getElementById('input-codigo');
+        const inputQtd = document.getElementById('input-qtd');
+        const inputPreco = document.getElementById('input-preco');
+        const dispItemTotal = document.getElementById('disp-item-total');
+        const dispTotalCompra = document.getElementById('disp-total-compra');
+        const inputPagamento = document.getElementById('input-pagamento');
+        const dispRestante = document.getElementById('disp-restante');
+        const dispTroco = document.getElementById('disp-troco');
+        const receiptContainer = document.getElementById('receipt-items-container');
+        const receiptSubtotal = document.getElementById('receipt-subtotal-val');
+        const itemsCountLabel = document.getElementById('items-count-label');
+        const emptyReceiptMsg = document.getElementById('empty-receipt-msg');
+        const statusMessage = document.getElementById('status-message');
+
+        // CLOCK FUNCTION
+        function updateClock() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('pt-BR');
+            const timeStr = now.toLocaleTimeString('pt-BR');
+            clockEl.textContent = `${dateStr} ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // FOCUS HELPER
+        function focusBarcode() {
+            inputCodigo.focus();
+        }
+
+        // FORMAT CURRENCY
+        function formatBRL(val) {
+            return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // SCAN / ADD ITEM
+        function processBarcode(rawCode) {
+            if (!rawCode) return;
+
+            let qty = parseInt(inputQtd.value) || 1;
+            let code = rawCode.trim();
+
+            // Handle quantity multiplier like "3*78910001001"
+            if (code.includes('*')) {
+                const parts = code.split('*');
+                qty = parseInt(parts[0]) || 1;
+                code = parts[1].trim();
+            }
+
+            let product = productsDB[code];
+
+            // Default fallback item if barcode not in DB
+            if (!product) {
+                product = {
+                    name: `PRODUTO GENÉRICO (${code})`,
+                    price: 9.99
+                };
+            }
+
+            // Update UI Preco and Total preview
+            inputPreco.value = formatBRL(product.price);
+            const itemTotal = product.price * qty;
+            dispItemTotal.textContent = formatBRL(itemTotal);
+
+            // Add to Cart
+            const newItem = {
+                id: currentCart.length + 1,
+                code: code,
+                name: product.name,
+                qty: qty,
+                unitPrice: product.price,
+                total: itemTotal
+            };
+
+            currentCart.push(newItem);
+            renderReceipt();
+            
+            // Reset input bar
+            inputCodigo.value = '';
+            inputQtd.value = '1';
+            
+            statusMessage.textContent = `ITEM ADICIONADO: ${product.name}`;
+            setTimeout(() => focusBarcode(), 50);
+        }
+
+        // RENDER RECEIPT PAPER
+        function renderReceipt() {
+            if (currentCart.length === 0) {
+                receiptContainer.innerHTML = '';
+                receiptContainer.appendChild(emptyReceiptMsg);
+                emptyReceiptMsg.classList.remove('hidden');
+                totalAmount = 0;
+            } else {
+                emptyReceiptMsg.classList.add('hidden');
+                receiptContainer.innerHTML = '';
+
+                totalAmount = 0;
+                currentCart.forEach((item, index) => {
+                    totalAmount += item.total;
+
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between items-center py-1 border-b border-gray-200/50 hover:bg-amber-100/50 px-1 rounded transition item-row-new';
+                    row.innerHTML = `
+                        <div class="flex-1 pr-2 truncate">
+                            <span class="text-pdv-border-red font-bold mr-1">${String(index + 1).padStart(3, '0')}</span>
+                            <span class="font-mono text-xs text-gray-600 mr-2">${item.code}</span>
+                            <span class="font-bold text-gray-900">${item.name}</span>
+                        </div>
+                        <div class="text-right font-mono text-xs">
+                            <span class="text-gray-600 mr-2">${item.qty} UN x ${formatBRL(item.unitPrice)}</span>
+                            <span class="font-bold text-gray-900 text-sm">R$ ${formatBRL(item.total)}</span>
+                        </div>
+                    `;
+                    receiptContainer.appendChild(row);
+                });
+
+                // Auto Scroll to bottom
+                receiptContainer.scrollTop = receiptContainer.scrollHeight;
+            }
+
+            // Update Left Totals
+            dispTotalCompra.textContent = formatBRL(totalAmount);
+            receiptSubtotal.textContent = `R$ ${formatBRL(totalAmount)}`;
+            itemsCountLabel.textContent = `TOTAL DE ITENS: ${currentCart.reduce((a, b) => a + b.qty, 0)}`;
+
+            calculateChange();
+        }
+
+        // CALCULATE CHANGE (TROCO & RESTANTE)
+        function calculateChange() {
+            const pagamento = parseFloat(inputPagamento.value) || 0;
+            const restante = totalAmount - pagamento;
+
+            if (restante > 0) {
+                dispRestante.textContent = formatBRL(restante);
+                dispTroco.textContent = "0,00";
+            } else {
+                dispRestante.textContent = "0,00";
+                dispTroco.textContent = formatBRL(Math.abs(restante));
+            }
+        }
+
+        // FINALIZE SALE
+        function finalizeSale() {
+            if (currentCart.length === 0) {
+                alert('O cupom está vazio! Adicione itens antes de finalizar.');
+                return;
+            }
+
+            const pagamento = parseFloat(inputPagamento.value) || 0;
+            if (pagamento < totalAmount && totalAmount > 0) {
+                if (!confirm(`O valor pago (R$ ${formatBRL(pagamento)}) é menor que o total (R$ ${formatBRL(totalAmount)}). Deseja concluir mesmo assim?`)) {
+                    return;
+                }
+            }
+
+            // Incremental COO Cupom
+            cooNumber++;
+            document.getElementById('coo-val').textContent = String(cooNumber).padStart(6, '0');
+
+            alert(`✅ VENDA FINALIZADA COM SUCESSO!\n\nCupom COO: ${cooNumber}\nTotal: R$ ${formatBRL(totalAmount)}\nTroco: R$ ${dispTroco.textContent}`);
+
+            // Reset for next sale
+            currentCart = [];
+            inputPagamento.value = '';
+            inputPreco.value = '';
+            dispItemTotal.textContent = '0,00';
+            statusMessage.textContent = 'VENDA CONCLUÍDA - CAIXA LIVRE';
+            renderReceipt();
+            focusBarcode();
+        }
+
+        // CANCEL LAST ITEM
+        function cancelLastItem() {
+            if (currentCart.length > 0) {
+                const removed = currentCart.pop();
+                statusMessage.textContent = `ITEM CANCELADO: ${removed.name}`;
+                renderReceipt();
+            }
+        }
+
+        // TOGGLE HELP MODAL
+        function toggleHelpModal() {
+            const modal = document.getElementById('modal-help');
+            modal.classList.toggle('hidden');
+        }
+
+        // QUICK ADD FROM MODAL
+        function quickAdd(code) {
+            processBarcode(code);
+            toggleHelpModal();
+        }
+
+        // SIMULATE SYNC
+        function simulateSync(type) {
+            statusMessage.textContent = `EXECUTANDO CARGA ${type}... AGUARDE`;
+            setTimeout(() => {
+                statusMessage.textContent = `CARGA ${type} CONCLUÍDA COM SUCESSO!`;
+            }, 800);
+        }
+
+        // KEYBOARD SHORTCUTS HANDLER
+        document.addEventListener('keydown', (e) => {
+            // F2 - Open Help Modal
+            if (e.key === 'F2') {
+                e.preventDefault();
+                toggleHelpModal();
+            }
+            // F4 - Finalize Sale
+            else if (e.key === 'F4') {
+                e.preventDefault();
+                finalizeSale();
+            }
+            // F8 - Cancel Item
+            else if (e.key === 'F8') {
+                e.preventDefault();
+                cancelLastItem();
+            }
+            // ESC - Close Modal or Reset
+            else if (e.key === 'Escape') {
+                const modal = document.getElementById('modal-help');
+                if (!modal.classList.contains('hidden')) {
+                    toggleHelpModal();
+                } else {
+                    focusBarcode();
+                }
+            }
+        });
+
+        // INPUT EVENT LISTENERS
+        inputCodigo.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                processBarcode(inputCodigo.value);
+            }
+        });
+
+        inputPagamento.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                finalizeSale();
+            }
+        });
+
+        // Keep Focus on Barcode input when clicking general background
+        window.onload = () => {
+            focusBarcode();
+        };
+    </script>
+</body>
+</html>
