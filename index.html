@@ -112,32 +112,10 @@
 	
 	
 	<!-- SOM DO BIP-->
-	<script>
-	
-	function tocarSomBeepLocal() {
-    const audioBip = document.getElementById('audio-bip');
-    if (audioBip) {
-        audioBip.currentTime = 0; // Reinicia o áudio caso tenha sido bipado rapidamente em sequência
-        audioBip.play().catch(error => {
-            console.log("Aguardando interação do usuário na página para liberar o áudio.", error);
-        });
-    }
-}
-
-// Corrigido de "nputCodigo" para "inputCodigo"
-inputCodigo.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        
-        // CHAMA O SOM DO BIP AQUI
-        tocarSomBeepLocal(); 
-
-        processBarcode(inputCodigo.value);
-    }
-});
-
-     </script>
-
+	<audio autoplay="autoplay" controls="controls">
+<source src="bip.mp3" type="audio/mp3" />
+seu navegador não suporta HTML5
+</audio>
     <!-- Restante do seu código HTML... -->
 
     <!-- TOP BAR -->
