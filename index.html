@@ -108,35 +108,9 @@
 
 <body class="flex flex-col h-screen text-white select-none">
 
-    <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
+    
 
-	<audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
-
-	<script>
-		const inputCodigo = document.getElementById('input-codigo');
-
-inputCodigo.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        
-        // Pega o áudio e reproduz do zero
-        const audioBip = document.getElementById('audio-bip');
-        if (audioBip) {
-            audioBip.currentTime = 0;
-            audioBip.play().catch(err => console.log("Bloqueado pelo navegador:", err));
-        }
-
-        processBarcode(inputCodigo.value);
-    }
-});
-	</script>
 	
-	
-	<!-- SOM DO BIP-->
-	<audio autoplay="autoplay" controls="controls">
-<source src="bip.mp3" type="audio/mp3" />
-seu navegador não suporta HTML5
-</audio>
     <!-- Restante do seu código HTML... -->
 
     <!-- TOP BAR -->
