@@ -525,9 +525,17 @@
             calculateChange();
         }
 
-        // CALCULATE CHANGE
+        // CALCULATE CHANGE (NÓS SÓ MOSTRARAMOS RESTANTE E TROCO SE TIVER DIGITAÇÃO NO PAGAMENTO)
         function calculateChange() {
-            const pagamento = parseFloat(inputPagamento.value) || 0;
+            const rawPagamento = inputPagamento.value.trim();
+            const pagamento = parseFloat(rawPagamento) || 0;
+
+            if (rawPagamento === '' || pagamento === 0) {
+                dispRestante.textContent = "0,00";
+                dispTroco.textContent = "0,00";
+                return;
+            }
+
             const restante = totalAmount - pagamento;
 
             if (restante > 0) {
