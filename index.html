@@ -23,8 +23,8 @@
             <!-- Top Wide Pill Bar -->
             <div class="capsule-input px-4 py-1.5 w-64 md:w-96 flex items-center justify-between">
                 <span class="text-gray-500 font-normal text-xs">Consulta / Status:</span>
-                <span class="text-green-700 text-xs font-bold uppercase tracking-wider flex items-center">
-                    <i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> CAIXA ABERTO
+                <span id="status-caixa-topo" class="text-red-700 text-xs font-bold uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> CAIXA FECHADO
                 </span>
             </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="col-span-4 flex flex-col justify-between aisle-bg p-4 rounded-xl border border-purple-950 shadow-2xl relative overflow-hidden">
             <!-- BRAND LOGO BADGE -->
             <div class="flex justify-center my-2">
-                <div class="logo-ellipse w-full max-w-[280px] py-4 px-6 text-center transform transition hover:scale-105 duration-200 cursor-pointer" onclick="focusBarcode()">
+                <div class="logo-ellipse w-full max-w-[280px] py-4 px-6 text-center transform transition hover:scale-105 duration-200 cursor-pointer" onclick="verificarAberturaOuFocar()">
                     <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-sans" style="font-family: Arial Black, sans-serif;">
                         Supribem
                     </h1>
@@ -88,8 +88,8 @@
             <!-- LOWER EXTRA WIDE CAPSULE FIELD -->
             <div class="mt-4 px-2">
                 <div class="capsule-input px-4 py-2 text-center text-xs font-bold text-gray-700 shadow-lg border border-gray-300 flex items-center justify-between">
-                    <span id="status-message" class="truncate">CAIXA LIVRE - PRONTO PARA VENDAS</span>
-                    <i class="fa-solid fa-barcode text-gray-500 text-lg"></i>
+                    <span id="status-message" class="truncate">CAIXA FECHADO - PRESSIONE F1 PARA ABRIR</span>
+                    <i class="fa-solid fa-lock text-red-600 text-lg" id="status-icon-lock"></i>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
                     <label class="mb-1 text-gray-200 tracking-wider">CÓDIGO</label>
                     <div class="capsule-input px-3 py-1.5 flex items-center space-x-2">
                         <i class="fa-solid fa-barcode text-gray-700 text-xl"></i>
-                        <input id="input-codigo" type="text" class="w-full text-base font-mono uppercase tracking-wider" placeholder="Código ou Barcode" autocomplete="off" autofocus>
+                        <input id="input-codigo" type="text" class="w-full text-base font-mono uppercase tracking-wider" placeholder="Código ou Barcode" autocomplete="off" disabled>
                     </div>
                 </div>
                 <!-- QTD / PESO -->
@@ -145,9 +145,9 @@
                 <div id="receipt-items-container" class="flex-1 overflow-y-auto receipt-scroll py-2 space-y-1 text-xs md:text-sm font-semibold">
                     <!-- Items inserted dynamically via JavaScript -->
                     <div id="empty-receipt-msg" class="h-full flex flex-col items-center justify-center text-gray-400 italic">
-                        <i class="fa-solid fa-basket-shopping text-4xl mb-2 text-amber-200"></i>
-                        <span>Nenhum item registrado no cupom</span>
-                        <span class="text-xs text-gray-400 mt-1">Pressione F2 para ver lista de códigos de teste</span>
+                        <i class="fa-solid fa-lock text-4xl mb-2 text-red-500"></i>
+                        <span class="font-bold text-red-700">CAIXA FECHADO</span>
+                        <span class="text-xs text-gray-500 mt-1">Pressione F1 para realizar a abertura de caixa</span>
                     </div>
                 </div>
                 <!-- PAPER FOOTER / DIVIDER LINES -->
@@ -170,7 +170,7 @@
         <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
             <i class="fa-solid fa-user-tie text-purple-300 text-sm mr-1"></i>
             <span class="font-bold">OPERADOR:</span>
-            <span class="text-yellow-300">001 - CAIXA PRINCIPAL</span>
+            <span id="footer-operador" class="text-yellow-300">FECHADO</span>
         </div>
         <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
             <i class="fa-solid fa-store text-purple-300 text-sm mr-1"></i>
@@ -249,8 +249,9 @@
             <div class="bg-purple-950 p-3 rounded-lg border border-purple-800 text-xs space-y-1 mb-4">
                 <p class="font-bold text-yellow-400">Atalhos do Teclado:</p>
                 <div class="grid grid-cols-2 gap-1 text-gray-300">
+                    <div><b class="text-white">F1:</b> Abertura de Caixa</div>
                     <div><b class="text-white">F2:</b> Lista de Produtos</div>
-                    <div><b class="text-white">F4 / Enter no Pagamento:</b> Finalizar</div>
+                    <div><b class="text-white">F4 / Enter Pagto:</b> Finalizar Venda</div>
                     <div><b class="text-white">F8:</b> Cancelar Último Item</div>
                     <div><b class="text-white">Esc / F12:</b> Novo Cupom</div>
                     <div><b class="text-white">Multiplicar/Peso:</b> Ex: <code class="bg-purple-900 px-1 text-yellow-300">0.500*9</code></div>
@@ -264,7 +265,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // MOCK PRODUCT DATABASE - ATUALIZADO COM A SUA LISTA OFICIAL
+        // MOCK PRODUCT DATABASE
         const productsDB = {
             '78910001001': { name: 'ARROZ TIPO 1 5KG', price: 26.90 },
             '78910001002': { name: 'FEIJÃO CARIOCA 1KG', price: 7.50 },
@@ -299,6 +300,9 @@
         };
 
         // STATE VARIABLES
+        let caixaAberto = false;
+        let fundoTroco = 0.00;
+        let operadorLogado = "";
         let currentCart = [];
         let totalAmount = 0.00;
         let cooNumber = 84920;
@@ -318,6 +322,9 @@
         const itemsCountLabel = document.getElementById('items-count-label');
         const emptyReceiptMsg = document.getElementById('empty-receipt-msg');
         const statusMessage = document.getElementById('status-message');
+        const statusCaixaTopo = document.getElementById('status-caixa-topo');
+        const statusIconLock = document.getElementById('status-icon-lock');
+        const footerOperador = document.getElementById('footer-operador');
 
         // CLOCK FUNCTION
         function updateClock() {
@@ -329,33 +336,77 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // FOCUS HELPER
-        function focusBarcode() {
-            inputCodigo.focus();
-        }
-
         // FORMAT CURRENCY
         function formatBRL(val) {
             return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // FORMAT QTD/PESO (Exibe com 3 casas decimais se for peso/decimal ou 0 se for inteiro)
+        // FORMAT QTD/PESO
         function formatQtd(val) {
             return Number.isInteger(val) ? val.toString() : val.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
         }
 
-        // FUNÇÃO DE SOM DO BIP DO ARQUIVO MP3 LOCAL
+        // FUNÇÃO DE ABERTURA DE CAIXA (PROMPT)
+        function abrirCaixa() {
+            if (caixaAberto) {
+                alert("O caixa já se encontra aberto!");
+                return;
+            }
+
+            let senhaInformada = prompt("--- ABERTURA DE CAIXA ---\nDigite a senha do operador:");
+            if (senhaInformada === null) return; // Cancelou
+
+            if (senhaInformada !== "031498") {
+                alert("❌ Senha incorreta! Acesso negado.");
+                return;
+            }
+
+            let fundoInformado = prompt("Digite o valor do fundo de troco inicial (Ex: 50.00):", "50.00");
+            if (fundoInformado === null) return; // Cancelou
+
+            let valorTroco = parseFloat(fundoInformado.replace(',', '.')) || 0;
+
+            // Caixa Aberto com Sucesso
+            caixaAberto = true;
+            fundoTroco = valorTroco;
+            operadorLogado = "001 - Gleison";
+
+            // Atualiza Interface Superior
+            statusCaixaTopo.className = "text-green-700 text-xs font-bold uppercase tracking-wider flex items-center";
+            statusCaixaTopo.innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> CAIXA ABERTO`;
+
+            // Atualiza Rodapé e Status Bar
+            footerOperador.textContent = operadorLogado;
+            statusMessage.textContent = `CAIXA ABERTO - FUNDO DE TROCO: R$ ${formatBRL(fundoTroco)}`;
+            statusIconLock.className = "fa-solid fa-lock-open text-green-500 text-lg";
+
+            // Libera campo de código de barras
+            inputCodigo.disabled = false;
+            inputCodigo.focus();
+
+            // Atualiza Mensagem do Cupom
+            renderReceipt();
+        }
+
+        function verificarAberturaOuFocar() {
+            if (!caixaAberto) {
+                abrirCaixa();
+            } else {
+                inputCodigo.focus();
+            }
+        }
+
+        // FUNÇÃO DE SOM DO BIP
         function tocarSomBeepLocal() {
             const audioBip = document.getElementById('audio-bip');
             if (audioBip) {
                 audioBip.currentTime = 0;
                 audioBip.play().catch(error => {
-                    console.log("Aguardando interação na página...", error);
+                    console.log("Aguardando interação...", error);
                 });
             }
         }
 
-        // UNLOCK ÁUDIO AUTOMÁTICO NO PRIMEIRO CLIQUE DO OPERADOR
         window.addEventListener('click', () => {
             const audio = document.getElementById('audio-bip');
             if (audio) {
@@ -366,8 +417,14 @@
             }
         }, { once: true });
 
-        // SCAN / ADD ITEM (SUPORTA UNIDADE E PESO/KG)
+        // SCAN / ADD ITEM
         function processBarcode(rawCode) {
+            if (!caixaAberto) {
+                alert("Caixa Fechado! Pressione F1 para abrir o caixa.");
+                abrirCaixa();
+                return;
+            }
+
             if (!rawCode) return;
 
             let qty = parseFloat(inputQtd.value.replace(',', '.')) || 1;
@@ -411,15 +468,28 @@
             inputQtd.value = '1';
 
             statusMessage.textContent = `ITEM ADICIONADO: ${product.name}`;
-            setTimeout(() => focusBarcode(), 50);
+            setTimeout(() => inputCodigo.focus(), 50);
         }
 
         // RENDER RECEIPT PAPER
         function renderReceipt() {
+            if (!caixaAberto) {
+                receiptContainer.innerHTML = '';
+                receiptContainer.appendChild(emptyReceiptMsg);
+                emptyReceiptMsg.classList.remove('hidden');
+                totalAmount = 0;
+                return;
+            }
+
             if (currentCart.length === 0) {
                 receiptContainer.innerHTML = '';
                 receiptContainer.appendChild(emptyReceiptMsg);
                 emptyReceiptMsg.classList.remove('hidden');
+                emptyReceiptMsg.innerHTML = `
+                    <i class="fa-solid fa-basket-shopping text-4xl mb-2 text-amber-200"></i>
+                    <span>Nenhum item registrado no cupom</span>
+                    <span class="text-xs text-gray-400 mt-1">Pressione F2 para ver lista de códigos de teste</span>
+                `;
                 totalAmount = 0;
             } else {
                 emptyReceiptMsg.classList.add('hidden');
@@ -455,7 +525,7 @@
             calculateChange();
         }
 
-        // CALCULATE CHANGE (TROCO & RESTANTE)
+        // CALCULATE CHANGE
         function calculateChange() {
             const pagamento = parseFloat(inputPagamento.value) || 0;
             const restante = totalAmount - pagamento;
@@ -471,6 +541,8 @@
 
         // FINALIZE SALE
         function finalizeSale() {
+            if (!caixaAberto) return;
+
             if (currentCart.length === 0) {
                 alert('O cupom está vazio! Adicione itens antes de finalizar.');
                 return;
@@ -492,13 +564,14 @@
             inputPagamento.value = '';
             inputPreco.value = '';
             dispItemTotal.textContent = '0,00';
-            statusMessage.textContent = 'VENDA CONCLUÍDA - CAIXA LIVRE';
+            statusMessage.textContent = 'CAIXA ABERTO - PRONTO PARA VENDAS';
             renderReceipt();
-            focusBarcode();
+            inputCodigo.focus();
         }
 
         // CANCEL LAST ITEM
         function cancelLastItem() {
+            if (!caixaAberto) return;
             if (currentCart.length > 0) {
                 const removed = currentCart.pop();
                 statusMessage.textContent = `ITEM CANCELADO: ${removed.name}`;
@@ -514,6 +587,12 @@
 
         // QUICK ADD FROM MODAL
         function quickAdd(code) {
+            if (!caixaAberto) {
+                alert("Abra o caixa primeiro pressionando F1.");
+                toggleHelpModal();
+                abrirCaixa();
+                return;
+            }
             processBarcode(code);
             toggleHelpModal();
         }
@@ -528,7 +607,10 @@
 
         // KEYBOARD SHORTCUTS HANDLER
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'F2') {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                abrirCaixa();
+            } else if (e.key === 'F2') {
                 e.preventDefault();
                 toggleHelpModal();
             } else if (e.key === 'F4') {
@@ -541,17 +623,17 @@
                 const modal = document.getElementById('modal-help');
                 if (!modal.classList.contains('hidden')) {
                     toggleHelpModal();
-                } else {
-                    focusBarcode();
+                } else if (caixaAberto) {
+                    inputCodigo.focus();
                 }
             }
         });
 
-        // INPUT EVENT LISTENERS (COM O BIP ATIVADO NO ENTER DO CÓDIGO)
+        // INPUT EVENT LISTENERS
         inputCodigo.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                tocarSomBeepLocal(); // TOCA O BIP MP3 NA HORA!
+                tocarSomBeepLocal();
                 processBarcode(inputCodigo.value);
             }
         });
@@ -563,10 +645,9 @@
             }
         });
 
-        // Keep Focus on Barcode input when clicking general background
         window.addEventListener('click', (e) => {
-            if (!e.target.closest('input') && !e.target.closest('button')) {
-                focusBarcode();
+            if (!e.target.closest('input') && !e.target.closest('button') && caixaAberto) {
+                inputCodigo.focus();
             }
         });
     </script>
