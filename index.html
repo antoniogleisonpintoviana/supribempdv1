@@ -1,104 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema PDV - Supribem</title>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'pdv-purple': '#2e0835',
-                        'pdv-dark-purple': '#1e0423',
-                        'pdv-light-purple': '#481352',
-                        'pdv-cream': '#fffbf0',
-                        'pdv-pill': '#f3f0e6',
-                        'pdv-border-red': '#8c2637',
-                        'pdv-logo-orange': '#bd4f24'
-                    },
-                    fontFamily: {
-                        sans: ['Ubuntu', 'sans-serif'],
-                        receipt: ['Courier Prime', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-            user-select: none;
-            background-color: #1e0423;
-            color: white;
-            font-family: 'Ubuntu', sans-serif;
-        }
-        /* Background blur overlay simulating supermarket aisle */
-        .aisle-bg {
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(46, 8, 53, 0.85)), url('https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-        }
-        /* Custom Capsule Inputs */
-        .capsule-input {
-            background-color: #f3f0e8;
-            border-radius: 9999px;
-            color: #222222;
-            font-weight: 700;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(255,255,255,0.2);
-            transition: all 0.15s ease-in-out;
-        }
-        .capsule-input:focus-within {
-            outline: 3px solid #ffcc00;
-            background-color: #ffffff;
-        }
-        .capsule-input input {
-            background: transparent;
-            outline: none;
-            color: #111;
-            font-weight: bold;
-        }
-        /* Logo Oval Frame */
-        .logo-ellipse {
-            background: radial-gradient(circle, #222 0%, #111 100%);
-            border: 6px solid #d35400;
-            border-radius: 50% / 50%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            transform: rotate(-3deg);
-        }
-        /* Custom Scrollbar for Receipt Paper */
-        .receipt-scroll::-webkit-scrollbar {
-            width: 8px;
-        }
-        .receipt-scroll::-webkit-scrollbar-track {
-            background: #f7f3e6;
-            border-radius: 4px;
-        }
-        .receipt-scroll::-webkit-scrollbar-thumb {
-            background: #c2bba8;
-            border-radius: 4px;
-        }
-        /* Pulse highlight animation for new scanned items */
-        @keyframes itemFlash {
-            0% { background-color: #ffe680; }
-            100% { background-color: transparent; }
-        }
-        .item-row-new {
-            animation: itemFlash 0.8s ease-out;
-        }
-    </style>
-</head>
-<body class="flex flex-col h-screen text-white select-none">
-
+<!DOCTYPE html><html lang="pt-BR"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Sistema PDV - Supribem</title>    <!-- Font Awesome Icons -->    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    <!-- Google Fonts -->    <link rel="preconnect" href="https://fonts.googleapis.com">    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">    <script src="https://cdn.tailwindcss.com"></script>    <script>        tailwind.config = {            theme: {                extend: {                    colors: {                        'pdv-purple': '#2e0835',                        'pdv-dark-purple': '#1e0423',                        'pdv-light-purple': '#481352',                        'pdv-cream': '#fffbf0',                        'pdv-pill': '#f3f0e6',                        'pdv-border-red': '#8c2637',                        'pdv-logo-orange': '#bd4f24'                    },                    fontFamily: {                        sans: ['Ubuntu', 'sans-serif'],                        receipt: ['Courier Prime', 'monospace']                    }                }            }        }    </script>    <style>        body, html {            height: 100%;            margin: 0;            overflow: hidden;            user-select: none;            background-color: #1e0423;            color: white;            font-family: 'Ubuntu', sans-serif;        }        /* Background blur overlay simulating supermarket aisle */        .aisle-bg {            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(46, 8, 53, 0.85)), url('https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200&auto=format&fit=crop');            background-size: cover;            background-position: center;        }        /* Custom Capsule Inputs */        .capsule-input {            background-color: #f3f0e8;            border-radius: 9999px;            color: #222222;            font-weight: 700;            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(255,255,255,0.2);            transition: all 0.15s ease-in-out;        }        .capsule-input:focus-within {            outline: 3px solid #ffcc00;            background-color: #ffffff;        }        .capsule-input input {            background: transparent;            outline: none;            color: #111;            font-weight: bold;        }        /* Logo Oval Frame */        .logo-ellipse {            background: radial-gradient(circle, #222 0%, #111 100%);            border: 6px solid #d35400;            border-radius: 50% / 50%;            box-shadow: 0 4px 15px rgba(0,0,0,0.6);            transform: rotate(-3deg);        }        /* Custom Scrollbar for Receipt Paper */        .receipt-scroll::-webkit-scrollbar {            width: 8px;        }        .receipt-scroll::-webkit-scrollbar-track {            background: #f7f3e6;            border-radius: 4px;        }        .receipt-scroll::-webkit-scrollbar-thumb {            background: #c2bba8;            border-radius: 4px;        }        /* Pulse highlight animation for new scanned items */        @keyframes itemFlash {            0% { background-color: #ffe680; }            100% { background-color: transparent; }        }        .item-row-new {            animation: itemFlash 0.8s ease-out;        }    </style></head><body class="flex flex-col h-screen text-white select-none">
     <!-- TAG DO ÁUDIO DO BIP -->
     <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
 
@@ -147,34 +47,38 @@
             </div>
 
             <!-- FINANCIAL SUMMARY CARDS -->
-            <div class="space-y-3 my-auto max-w-xs mx-auto w-full">
-                <!-- TOTAL DA COMPRA -->
-                <div>
-                    <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">TOTAL DA COMPRA</label>
-                    <div class="capsule-input px-4 py-2 text-center text-2xl md:text-3xl font-extrabold text-gray-900 shadow-md">
-                        <span class="text-sm font-semibold text-gray-500 mr-1">R$</span>
-                        <span id="disp-total-compra">0,00</span>
+            <div class="space-y-4 my-auto w-full px-2">
+                <!-- ROW 1: TOTAL DA COMPRA + PAGAMENTO -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">TOTAL DA COMPRA</label>
+                        <div class="capsule-input px-3 py-2 text-center text-xl md:text-2xl font-extrabold text-gray-900 shadow-md">
+                            <span class="text-xs font-semibold text-gray-500 mr-1">R$</span>
+                            <span id="disp-total-compra">0,00</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">PAGAMENTO</label>
+                        <div class="capsule-input px-3 py-2 text-center text-xl md:text-2xl font-extrabold text-gray-900 shadow-md flex items-center justify-center">
+                            <span class="text-xs font-semibold text-gray-500 mr-1">R$</span>
+                            <input id="input-pagamento" type="number" step="0.01" class="w-full text-center capsule-input p-0 border-none focus:ring-0 text-xl md:text-2xl" placeholder="0,00" oninput="calculateChange()">
+                        </div>
                     </div>
                 </div>
-                <!-- PAGAMENTO -->
-                <div>
-                    <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">PAGAMENTO</label>
-                    <div class="capsule-input px-4 py-2 text-center text-2xl md:text-3xl font-extrabold text-gray-900 shadow-md flex items-center justify-center">
-                        <span class="text-sm font-semibold text-gray-500 mr-1">R$</span>
-                        <input id="input-pagamento" type="number" step="0.01" class="w-full text-center capsule-input p-0 border-none focus:ring-0" placeholder="0,00" oninput="calculateChange()">
-                    </div>
-                </div>
-                <!-- RESTANTE & TROCO ROW -->
+
+                <!-- ROW 2: RESTANTE + TROCO -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">RESTANTE</label>
-                        <div class="capsule-input px-2 py-1.5 text-center text-lg md:text-xl font-bold text-red-700 shadow-md">
+                        <div class="capsule-input px-3 py-2 text-center text-xl md:text-2xl font-bold text-red-700 shadow-md">
+                            <span class="text-xs font-semibold text-gray-500 mr-1">R$</span>
                             <span id="disp-restante">0,00</span>
                         </div>
                     </div>
                     <div>
                         <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">TROCO</label>
-                        <div class="capsule-input px-2 py-1.5 text-center text-lg md:text-xl font-bold text-green-700 shadow-md">
+                        <div class="capsule-input px-3 py-2 text-center text-xl md:text-2xl font-bold text-green-700 shadow-md">
+                            <span class="text-xs font-semibold text-gray-500 mr-1">R$</span>
                             <span id="disp-troco">0,00</span>
                         </div>
                     </div>
@@ -182,7 +86,7 @@
             </div>
 
             <!-- LOWER EXTRA WIDE CAPSULE FIELD -->
-            <div class="mt-4">
+            <div class="mt-4 px-2">
                 <div class="capsule-input px-4 py-2 text-center text-xs font-bold text-gray-700 shadow-lg border border-gray-300 flex items-center justify-between">
                     <span id="status-message" class="truncate">CAIXA LIVRE - PRONTO PARA VENDAS</span>
                     <i class="fa-solid fa-barcode text-gray-500 text-lg"></i>
@@ -202,11 +106,11 @@
                         <input id="input-codigo" type="text" class="w-full text-base font-mono uppercase tracking-wider" placeholder="Código ou Barcode" autocomplete="off" autofocus>
                     </div>
                 </div>
-                <!-- QTD -->
-                <div class="w-20 flex flex-col">
-                    <label class="mb-1 text-center text-gray-200">QTD</label>
+                <!-- QTD / PESO -->
+                <div class="w-24 flex flex-col">
+                    <label class="mb-1 text-center text-gray-200">QTD/PESO</label>
                     <div class="capsule-input px-2 py-1.5 text-center">
-                        <input id="input-qtd" type="number" min="1" value="1" class="w-full text-center text-base font-bold">
+                        <input id="input-qtd" type="number" step="0.001" min="0.001" value="1" class="w-full text-center text-base font-bold">
                     </div>
                 </div>
                 <div class="text-xl font-black text-gray-300 self-end pb-2">X</div>
@@ -233,7 +137,7 @@
                 <div class="pb-2 border-b-2 border-pdv-border-red">
                     <div class="flex justify-between items-center text-xs font-bold text-pdv-border-red uppercase tracking-wider mb-1">
                         <span>ITEM &nbsp; CÓDIGO &nbsp; DESCRIÇÃO</span>
-                        <span>QTD x UNIT &nbsp; R$ TOTAL</span>
+                        <span>QTD/PESO x UNIT &nbsp; R$ TOTAL</span>
                     </div>
                     <div class="w-full border-t border-dashed border-pdv-border-red my-1"></div>
                 </div>
@@ -333,13 +237,13 @@
                 </div>
                 <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001004')">
                     <span class="font-mono text-yellow-300">78910001004</span>
-                    <span class="font-bold">Oleo de Soja 900ml</span>
+                    <span class="font-bold">ÓLEO DE SOJA 900ML</span>
                     <span class="text-green-400 font-bold">R$ 6,29</span>
                 </div>
-                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001005')">
-                    <span class="font-mono text-yellow-300">78910001005</span>
-                    <span class="font-bold">CAFÉ TORRADO 500G</span>
-                    <span class="text-green-400 font-bold">R$ 16,90</span>
+                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('9')">
+                    <span class="font-mono text-yellow-300">9</span>
+                    <span class="font-bold">CEBOLA BRANCA KG</span>
+                    <span class="text-green-400 font-bold">R$ 5,99</span>
                 </div>
             </div>
             <div class="bg-purple-950 p-3 rounded-lg border border-purple-800 text-xs space-y-1 mb-4">
@@ -349,7 +253,7 @@
                     <div><b class="text-white">F4 / Enter no Pagamento:</b> Finalizar</div>
                     <div><b class="text-white">F8:</b> Cancelar Último Item</div>
                     <div><b class="text-white">Esc / F12:</b> Novo Cupom</div>
-                    <div><b class="text-white">Multiplicar:</b> Ex: <code class="bg-purple-900 px-1 text-yellow-300">3*78910001003</code></div>
+                    <div><b class="text-white">Multiplicar/Peso:</b> Ex: <code class="bg-purple-900 px-1 text-yellow-300">0.500*9</code></div>
                 </div>
             </div>
             <button onclick="toggleHelpModal()" class="w-full py-2 bg-yellow-500 hover:bg-yellow-400 text-purple-950 font-bold rounded-lg transition">
@@ -435,6 +339,11 @@
             return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        // FORMAT QTD/PESO (Exibe com 3 casas decimais se for peso/decimal ou 0 se for inteiro)
+        function formatQtd(val) {
+            return Number.isInteger(val) ? val.toString() : val.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        }
+
         // FUNÇÃO DE SOM DO BIP DO ARQUIVO MP3 LOCAL
         function tocarSomBeepLocal() {
             const audioBip = document.getElementById('audio-bip');
@@ -457,16 +366,16 @@
             }
         }, { once: true });
 
-        // SCAN / ADD ITEM
+        // SCAN / ADD ITEM (SUPORTA UNIDADE E PESO/KG)
         function processBarcode(rawCode) {
             if (!rawCode) return;
 
-            let qty = parseInt(inputQtd.value) || 1;
+            let qty = parseFloat(inputQtd.value.replace(',', '.')) || 1;
             let code = rawCode.trim();
 
             if (code.includes('*')) {
                 const parts = code.split('*');
-                qty = parseInt(parts[0]) || 1;
+                qty = parseFloat(parts[0].replace(',', '.')) || 1;
                 code = parts[1].trim();
             }
 
@@ -479,14 +388,18 @@
             }
 
             inputPreco.value = formatBRL(product.price);
-            const itemTotal = product.price * qty;
+            const itemTotal = Math.round((product.price * qty) * 100) / 100;
             dispItemTotal.textContent = formatBRL(itemTotal);
+
+            const isKg = product.name.toUpperCase().includes('KG') || !Number.isInteger(qty);
+            const unitLabel = isKg ? 'KG' : 'UN';
 
             const newItem = {
                 id: currentCart.length + 1,
                 code: code,
                 name: product.name,
                 qty: qty,
+                unitLabel: unitLabel,
                 unitPrice: product.price,
                 total: itemTotal
             };
@@ -525,7 +438,7 @@
                             <span class="font-bold text-gray-900">${item.name}</span>
                         </div>
                         <div class="text-right font-mono text-xs">
-                            <span class="text-gray-600 mr-2">${item.qty} UN x ${formatBRL(item.unitPrice)}</span>
+                            <span class="text-gray-600 mr-2">${formatQtd(item.qty)} ${item.unitLabel} x ${formatBRL(item.unitPrice)}</span>
                             <span class="font-bold text-gray-900 text-sm">R$ ${formatBRL(item.total)}</span>
                         </div>
                     `;
@@ -537,7 +450,7 @@
 
             dispTotalCompra.textContent = formatBRL(totalAmount);
             receiptSubtotal.textContent = `R$ ${formatBRL(totalAmount)}`;
-            itemsCountLabel.textContent = `TOTAL DE ITENS: ${currentCart.reduce((a, b) => a + b.qty, 0)}`;
+            itemsCountLabel.textContent = `TOTAL DE ITENS: ${currentCart.length}`;
 
             calculateChange();
         }
@@ -651,9 +564,11 @@
         });
 
         // Keep Focus on Barcode input when clicking general background
-        window.onload = () => {
-            focusBarcode();
-        };
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('input') && !e.target.closest('button')) {
+                focusBarcode();
+            }
+        });
     </script>
 </body>
 </html>
