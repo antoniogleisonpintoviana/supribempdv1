@@ -670,6 +670,70 @@
                 inputCodigo.focus();
             }
         });
+
+        //forma de pagamnto 
+        // ESCUTA GLOBAL DE ATALHOS DO TECLADO
+        window.addEventListener('keydown', function(event) {
+            const activeElem = document.activeElement;
+            const tecla = event.key.toLowerCase();
+
+            if (event.key === 'F2') {
+                event.preventDefault();
+                toggleHelpModal();
+                return;
+            }
+            if (event.key === 'Escape') {
+                helpModal.classList.add('hidden');
+                return;
+            }
+            if (event.key === 'F1') {
+                event.preventDefault();
+                abrirCaixa();
+                return;
+            }
+
+            if (!caixaAberto) return;
+
+            if (activeElem === inputCodigo || activeElem === inputQtd) {
+                if (event.code !== 'Space') return;
+            }
+
+            let formaPagamento = '';
+            let acaoRealizada = false;
+
+            if (tecla === 'c') {
+                formaPagamento = 'Cartão de Crédito';
+                acaoRealizada = true;
+            } else if (tecla === 'd') {
+                formaPagamento = 'Cartão de Débito';
+                acaoRealizada = true;
+            } else if (tecla === 'p') {
+                formaPagamento = 'PIX';
+                acaoRealizada = true;
+            } else if (event.code === 'Space') {
+                if (activeElem.tagName !== 'INPUT') event.preventDefault();
+                formaPagamento = 'Dinheiro';
+                acaoRealizada = true;
+            }
+
+            if (acaoRealizada) {
+                let valorDigitado = prompt(
+                    `FORMA DE PAGAMENTO: [${formaPagamento.toUpperCase()}]\nTotal da Compra: R$ ${formatBRL(totalAmount)}\n\nDigite o valor pago pelo cliente:`,
+                    totalAmount > 0 ? totalAmount.toFixed(2) : "0.00"
+                );
+
+                if (valorDigitado !== null) {
+                    let numValor = parseFloat(valorDigitado.replace(',', '.')) || 0;
+                    inputPagamento.value = formatBRL(numValor);
+                    calculateChange();
+                    
+                    statusMessage.textContent = `PAGAMENTO EM ${formaPagamento.toUpperCase()}: R$ ${formatBRL(numValor)}`;
+
+                    // EXIBE O ALERT COM O RESUMO DO PAGAMENTO
+                    alert(`=== COMPROVANTE DE PAGAMENTO ===\nForma: ${formaPagamento}\nTotal da Compra: R$ ${formatBRL(totalAmount)}\nValor Pago: R$ ${formatBRL(numValor)}`);
+                }
+            }
+        });
     </script>
 </body>
 </html>
