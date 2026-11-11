@@ -94,8 +94,16 @@
 </head>
 <body class="flex flex-col h-screen text-white select-none">
     <!-- AUDIO -->
+   <!-- TAG DO ÁUDIO (Na raiz do repositório) -->
     <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
 
+    <!-- SEUS OUTROS SCRIPTS DO SISTEMA -->
+    <!-- ... -->
+
+    <!-- SCRIPT ISOLADO DO BIP (Não interfere em nada do sistema) -->
+    <script src="bip.js"></script>
+</body>
+</html>
     <script>
 		// Função simples para disparar o som do bip
 function tocarBip() {
