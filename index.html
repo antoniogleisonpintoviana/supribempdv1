@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+	<script src="limpar.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -645,9 +646,14 @@ function tocarBip() {
 
                     // EXIBE O ALERT COM O RESUMO DO PAGAMENTO
                     alert(`=== COMPROVANTE DE PAGAMENTO ===\nForma: ${formaPagamento}\nTotal da Compra: R$ ${formatBRL(totalAmount)}\nValor Pago: R$ ${formatBRL(numValor)}`);
-                }
+
+					// 🚀 CHAMA A LIMPEZA AUTOMÁTICA DA VENDA AQUI
+                    limparAposVenda();
+				
+				}
             }
         });
     </script>
+
 </body>
 </html>
