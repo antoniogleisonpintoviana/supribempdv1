@@ -96,6 +96,32 @@
     <!-- AUDIO -->
     <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
 
+     <script>
+        // FUNÇÃO DE SOM DO BIP
+        function tocarSomBeepLocal() {
+            const audioBip = document.getElementById('audio-bip');
+            if (audioBip) {
+                audioBip.currentTime = 0;
+                audioBip.play().catch(error => {
+                    console.log("Aguardando interação...", error);
+                });
+            }
+        }
+
+        window.addEventListener('click', () => {
+            const audio = document.getElementById('audio-bip');
+            if (audio) {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(() => {});
+            }
+        }, { once: true });
+		</script>
+
+
+    
+
     <!-- TOP BAR -->
     <header class="bg-pdv-purple px-4 py-2 border-b border-purple-900 flex items-center justify-between text-xs md:text-sm font-bold tracking-wide">
         <div class="flex items-center space-x-2">
