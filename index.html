@@ -96,29 +96,22 @@
     <!-- AUDIO -->
     <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
 
-     <script>
-        // FUNÇÃO DE SOM DO BIP
-        function tocarSomBeepLocal() {
-            const audioBip = document.getElementById('audio-bip');
-            if (audioBip) {
-                audioBip.currentTime = 0;
-                audioBip.play().catch(error => {
-                    console.log("Aguardando interação...", error);
-                });
-            }
-        }
-
-        window.addEventListener('click', () => {
-            const audio = document.getElementById('audio-bip');
-            if (audio) {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(() => {});
-            }
-        }, { once: true });
-		</script>
-
+    <script>
+		// Função simples para disparar o som do bip
+function tocarBip() {
+    const audio = document.getElementById('audio-bip');
+    if (audio) {
+        audio.currentTime = 0; // Reinicia o áudio caso toque seguido
+        audio.play().catch(e => console.log("Áudio aguardando interação:", e));
+    }
+}
+		document.getElementById('input-codigo').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        tocarBip(); // <--- Toca o som do bip na hora do Enter
+        processBarcode(e.target.value);
+    }
+});
+	</script>
 
     
 
