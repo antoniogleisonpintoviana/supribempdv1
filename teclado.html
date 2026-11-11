@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teclado PDV & Pinpad Gertec</title>
+    <!-- Fontes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pos: {
+                            bg: '#1c1e21',
+                            casing: '#26292d',
+                            casingDark: '#1a1c1e',
+                            lcdBg: '#597042',
+                            lcdText: '#0f1f06',
+                            btnGray: '#d9dcde',
+                            btnRed: '#e75355',
+                            btnGreen: '#85cb87',
+                            btnYellow: '#f2cd38',
+                            btnBlue: '#9bcbe0',
+                            gertecBody: '#22252a'
+                        }
+                    },
+                    fontFamily: {
+                        lcd: ['"Share Tech Mono"', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Textura do Plástico do Terminal PDV */
+        .texture-plastic {
+            background-color: #272a2e;
+            background-image: 
+                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0),
+                radial-gradient(rgba(0, 0, 0, 0.5) 1px, transparent 0);
+            background-size: 4px 4px;
+            background-position: 0 0, 2px 2px;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.08), inset 0 -3px 8px rgba(0,0,0,0.8);
+        }
+
+        /* Moldura Chanfrada Realista do LCD */
+        .lcd-bezel {
+            background: linear-gradient(145deg, #18191b, #2c2f34);
+            box-shadow: 
+                inset 0 4px 10px rgba(0, 0, 0, 0.9),
+                0 2px 4px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Efeito de Vidro do Mostrador LCD Green retroiluminado */
+        .lcd-screen {
+            background: linear-gradient(180deg, #718a56 0%, #597042 70%, #4c6237 100%);
+            box-shadow: 
+                inset 0 0 15px rgba(0, 0, 0, 0.6),
+                inset 0 2px 4px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lcd-screen::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
+        /* Moldura de Teclas 3D / Nicho da Tecla */
+        .key-socket {
+            background: linear-gradient(145deg, #181a1c, #30343a);
+            border-radius: 6px;
+            padding: 3px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Efeito Tecla 3D Física */
+        .pos-key {
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.05s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 800;
+            border-radius: 4px;
+            cursor: pointer;
+            word-break: break-word;
+            line-height: 1.1;
+            padding: 2px 4px;
+            box-shadow: 
+                0 4px 0 rgba(0, 0, 0, 0.4),
+                0 5px 6px rgba(0,0,0,0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .pos-key:active, .pos-key.pressed {
+            transform: translateY(3px);
+            box-shadow: 
+                0 1px 0 rgba(0, 0, 0, 0.4),
+                0 2px 3px rgba(0,0,0,0.2),
+                inset 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Capas Transparentes do Teclado PDV (Efeito Moldado Acrílico) */
+        .acrylic-cap {
+            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.08) 100%);
+        }
+
+        /* Cores de Teclas Específicas */
+        .key-white {
+            background-color: #dedfda;
+            color: #111;
+            border: 1px solid #c4c5c0;
+        }
+
+        .key-red {
+            background-color: #f17879;
+            color: #111;
+            border: 1px solid #d95e5f;
+        }
+
+        .key-lightred {
+            background-color: #fca5a5;
+            color: #111;
+            border: 1px solid #f87171;
+        }
+
+        .key-green {
+            background-color: #a4dda8;
+            color: #111;
+            border: 1px solid #85cb87;
+        }
+
+        .key-yellow {
+            background-color: #fde047;
+            color: #111;
+            border: 1px solid #eab308;
+        }
+
+        .key-blue {
+            background-color: #bae6fd;
+            color: #111;
+            border: 1px solid #7dd3fc;
+        }
+
+        /* Estilo Gertec numérico especifico */
+        .gertec-key-black {
+            background: linear-gradient(180deg, #373a40 0%, #26282c 100%);
+            color: #ffffff;
+            border: 1px solid #1a1b1e;
+            box-shadow: 
+                0 4px 0 #151618,
+                0 5px 6px rgba(0,0,0,0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+        .gertec-key-black:active, .gertec-key-black.pressed {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #151618, inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .gertec-key-yellow {
+            background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
+            color: #000;
+            font-weight: 900;
+            border: 1px solid #ca8a04;
+        }
+
+        .gertec-key-red {
+            background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+            color: #000;
+            font-weight: 800;
+            border: 1px solid #b91c1c;
+        }
+
+        .gertec-key-lightyellow {
+            background: linear-gradient(180deg, #fef08a 0%, #fde047 100%);
+            color: #000;
+            font-weight: 800;
+            border: 1px solid #eab308;
+        }
+
+        .gertec-key-green {
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+            color: #000;
+            font-weight: 800;
+            border: 1px solid #15803d;
+        }
+
+        /* Scrollbar custom para a lista do PDV no visor */
+        .lcd-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .lcd-scroll::-webkit-scrollbar-thumb {
+            background: rgba(15, 31, 6, 0.4);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-pos-bg min-h-screen flex flex-col items-center justify-center p-2 sm:p-6 text-slate-100 font-sans">
+
+    <!-- Container Principal Responsivo com os dois teclados -->
+    <div class="max-w-6xl w-full flex flex-col xl:flex-row gap-6 items-center justify-center">
+
+        <!-- ========================================== -->
+        <!-- TERMINAL DE CAIXA PDV PRINCIPAL (ESQUERDA) -->
+        <!-- ========================================== -->
+        <div class="texture-plastic p-4 sm:p-6 rounded-2xl border-t border-slate-600/40 shadow-2xl flex flex-col items-center w-full xl:w-auto max-w-[650px]">
+            
+            <!-- Visor Display LCD Verde -->
+            <div class="w-full mb-5 lcd-bezel p-3 rounded-lg border border-slate-900">
+                <div class="lcd-screen rounded-md p-3 font-lcd text-pos-lcdText flex flex-col justify-between h-28 sm:h-32 select-none">
+                    
+                    <!-- Topo do LCD (Status / Caixas) -->
+                    <div class="flex justify-between items-center border-b border-pos-lcdText/20 pb-1 text-xs sm:text-sm font-bold tracking-widest">
+                        <span>CAIXA 01 - OPERADOR 04</span>
+                        <span id="pos-status-badge" class="bg-pos-lcdText text-pos-lcdBg px-1.5 py-0.5 rounded text-[10px]">LIVRE</span>
+                    </div>
+
+                    <!-- Conteúdo Central / Entrada de Dados -->
+                    <div class="my-auto">
+                        <div id="lcd-main-display" class="text-xl sm:text-2xl font-bold tracking-wider truncate">
+                            CAIXA LIVRE
+                        </div>
+                        <div id="lcd-sub-display" class="text-xs sm:text-sm opacity-90 truncate h-5">
+                            Pressione [ENTRADA DE OPERADOR] para iniciar
+                        </div>
+                    </div>
+
+                    <!-- Rodapé do LCD -->
+                    <div class="flex justify-between items-end border-t border-pos-lcdText/20 pt-1 text-xs sm:text-sm font-bold">
+                        <span>TOTAL R$:</span>
+                        <span id="lcd-total" class="text-lg sm:text-xl tracking-wider">0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matriz de Teclas PDV (6 colunas x 7 linhas) -->
+            <div class="grid grid-cols-6 gap-1.5 sm:gap-2.5 w-full bg-neutral-900/90 p-2 sm:p-3 rounded-xl border border-neutral-800 shadow-inner">
+
+                <!-- ROW 1 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('Redução Z')" class="pos-key key-blue acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Redução Z</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Abre Gaveta')" class="pos-key key-lightred acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Abre Gaveta</span>
+                        <span class="text-[8px] opacity-75 mt-0.5">Sangria</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Sangria')" class="pos-key key-lightred acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Sangria</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Cancela Tef')" class="pos-key key-lightred acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Cancela Tef</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Cancela Cupom')" class="pos-key key-lightred acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Cancela Cupom</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Cancela Item')" class="pos-key key-lightred acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Cancela Item</span>
+                    </button>
+                </div>
+
+                <!-- ROW 2 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('Saída Operador')" class="pos-key key-blue acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Saída de Operador</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Bloq PDV')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Bloq. PDV</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Pré Venda')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Pré Venda</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Troca Dev.')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Troca Dev.</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Recarga Celular')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Recarga Celular</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Menu Desc')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Menu Desc</span>
+                    </button>
+                </div>
+
+                <!-- ROW 3 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('Informar Cliente')" class="pos-key key-blue acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Informar Cliente</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('seta-esquerda')" class="pos-key key-yellow acrylic-cap h-12 sm:h-14 w-full text-base sm:text-lg">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+
+                <!-- ROW 4 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('seta-direita')" class="pos-key key-yellow acrylic-cap h-12 sm:h-14 w-full text-base sm:text-lg">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- ROW 5 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('Menu')" class="pos-key key-blue acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Menu</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Tef Débito')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Tef Débito</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Ticket')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Ticket</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('seta-cima')" class="pos-key key-yellow acrylic-cap h-12 sm:h-14 w-full text-base sm:text-lg">
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+                </div>
+
+                <!-- ROW 6 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('Entrada Operador')" class="pos-key key-blue acrylic-cap h-12 sm:h-14 w-full text-[8px] sm:text-[10px]">
+                        <span>Entrada de Operador</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Pix QR')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Pix QR</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('seta-baixo')" class="pos-key key-yellow acrylic-cap h-12 sm:h-14 w-full text-base sm:text-lg">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                </div>
+
+                <!-- ROW 7 -->
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('')" class="pos-key key-white acrylic-cap h-12 sm:h-14 w-full"></button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Tef Crédito')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Tef Crédito</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Menu POS')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[9px] sm:text-[10px]">
+                        <span>Menu P.O.S</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('Dinheiro')" class="pos-key key-green acrylic-cap h-12 sm:h-14 w-full text-[10px] sm:text-[11px]">
+                        <span>Dinheiro</span>
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressKey('seta-baixo-2')" class="pos-key key-yellow acrylic-cap h-12 sm:h-14 w-full text-base sm:text-lg">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- PINPAD TECLADO NUMÉRICO GERTEC (DIREITA)   -->
+        <!-- ========================================== -->
+        <div class="bg-pos-gertecBody p-5 rounded-2xl border-t border-neutral-600 shadow-2xl flex flex-col items-center w-full sm:w-[360px] border border-neutral-800">
+            
+            <!-- Logotipo Gertec Estilizado em Prata Relevo -->
+            <div class="w-full flex justify-center mb-6 mt-1">
+                <div class="relative px-6 py-1">
+                    <span class="text-2xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-slate-100 via-slate-300 to-slate-500 drop-shadow">
+                        Gertec
+                    </span>
+                    <div class="w-full h-[2px] bg-gradient-to-r from-transparent via-slate-400 to-transparent mt-0.5"></div>
+                </div>
+            </div>
+
+            <!-- Grade de Teclas do Gertec -->
+            <div class="grid grid-cols-4 gap-2 w-full bg-neutral-900 p-3 rounded-xl border border-neutral-800 shadow-inner">
+
+                <!-- Linha Superior Amarela -->
+                <div class="key-socket">
+                    <button onclick="pressNum('CONSULTA')" class="pos-key gertec-key-yellow h-14 w-full text-[9px] uppercase tracking-tighter">
+                        consultar<br>produto
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('SUBTOTAL')" class="pos-key gertec-key-yellow h-14 w-full text-[10px] uppercase font-bold">
+                        SUB<br>TOTAL
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('MENU_FINAL')" class="pos-key gertec-key-yellow h-14 w-full text-[9px] uppercase tracking-tighter">
+                        MENU<br>FINALIZA
+                    </button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('*')" class="pos-key gertec-key-yellow h-14 w-full text-2xl font-black">
+                        *
+                    </button>
+                </div>
+
+                <!-- Teclas 7, 8, 9, ANULA -->
+                <div class="key-socket">
+                    <button onclick="pressNum('7')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">7</button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('8')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">8</button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('9')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">9</button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('ANULA')" class="pos-key gertec-key-red h-14 w-full text-sm italic font-black">anula</button>
+                </div>
+
+                <!-- Teclas 4, 5, 6, LIMPA -->
+                <div class="key-socket">
+                    <button onclick="pressNum('4')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">4</button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('5')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">5</button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('6')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">6</button>
+                </div>
+                <div class="key-socket">
+                    <button onclick="pressNum('LIMPA')" class="pos-key gertec-key-lightyellow h-14 w-full text-sm italic font-black">limpa</button>
+                </div>
+
+                <!-- Linhas 1, 2, 3, 00, 0, virgula e ENTRA estendido -->
+                <div class="col-span-3 grid grid-cols-3 gap-2">
+                    <div class="key-socket">
+                        <button onclick="pressNum('1')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">1</button>
+                    </div>
+                    <div class="key-socket">
+                        <button onclick="pressNum('2')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">2</button>
+                    </div>
+                    <div class="key-socket">
+                        <button onclick="pressNum('3')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">3</button>
+                    </div>
+                    
+                    <div class="key-socket">
+                        <button onclick="pressNum('00')" class="pos-key gertec-key-black h-14 w-full text-xl font-bold italic">00</button>
+                    </div>
+                    <div class="key-socket">
+                        <button onclick="pressNum('0')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">0</button>
+                    </div>
+                    <div class="key-socket">
+                        <button onclick="pressNum(',')" class="pos-key gertec-key-black h-14 w-full text-2xl font-bold">,</button>
+                    </div>
+                </div>
+
+                <!-- Tecla ENTRA ocupando 2 linhas verticalmente -->
+                <div class="col-span-1 key-socket h-full">
+                    <button onclick="pressNum('ENTRA')" class="pos-key gertec-key-green h-full w-full text-sm italic font-black flex items-center justify-center">
+                        entra
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Rodapé informativo -->
+            <div class="mt-4 text-[11px] text-neutral-400 font-mono text-center">
+                Teclado Numérico Gertec PDV
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LÓGICA E INTERATIVIDADE EM JAVASCRIPT -->
+    <script>
+        // Estado do Sistema de Caixa Simulado
+        let inputBuffer = "";
+        let currentTotal = 0.00;
+        let isOperatorLoggedIn = false;
+        let currentStatus = "CAIXA LIVRE";
+
+        const lcdMain = document.getElementById('lcd-main-display');
+        const lcdSub = document.getElementById('lcd-sub-display');
+        const lcdTotal = document.getElementById('lcd-total');
+        const statusBadge = document.getElementById('pos-status-badge');
+
+        // Síntese de Áudio para Feedback de Beep (Tone.js sintético via Web Audio API)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playBeep(freq = 1200, duration = 0.05) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                // Silencioso se áudio não for suportado
+            }
+        }
+
+        // Função para formatação de moeda BRL
+        function formatMoney(value) {
+            return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Manipulação das teclas do painel principal PDV
+        function pressKey(keyName) {
+            playBeep(900, 0.04);
+            
+            if (!keyName) return;
+
+            switch (keyName) {
+                case 'Entrada Operador':
+                    isOperatorLoggedIn = true;
+                    statusBadge.innerText = "ABERTO";
+                    statusBadge.className = "bg-green-950 text-emerald-300 px-1.5 py-0.5 rounded text-[10px]";
+                    lcdMain.innerText = "CAIXA ABERTO";
+                    lcdSub.innerText = "Informe o produto ou valor...";
+                    inputBuffer = "";
+                    break;
+
+                case 'Saída Operador':
+                    isOperatorLoggedIn = false;
+                    statusBadge.innerText = "LIVRE";
+                    statusBadge.className = "bg-pos-lcdText text-pos-lcdBg px-1.5 py-0.5 rounded text-[10px]";
+                    lcdMain.innerText = "CAIXA FECHADO";
+                    lcdSub.innerText = "Pressione ENTRADA DE OPERADOR";
+                    currentTotal = 0.00;
+                    inputBuffer = "";
+                    updateDisplay();
+                    break;
+
+                case 'Cancela Item':
+                case 'Cancela Cupom':
+                    playBeep(400, 0.15);
+                    inputBuffer = "";
+                    lcdMain.innerText = keyName.toUpperCase() + " OK";
+                    lcdSub.innerText = "Operação cancelada.";
+                    break;
+
+                case 'Dinheiro':
+                case 'Tef Débito':
+                case 'Tef Crédito':
+                case 'Pix QR':
+                    if (currentTotal > 0) {
+                        playBeep(1500, 0.1);
+                        lcdMain.innerText = "PAGO VIA " + keyName.toUpperCase();
+                        lcdSub.innerText = "Troco: R$ 0,00";
+                        currentTotal = 0.00;
+                        inputBuffer = "";
+                        updateDisplay();
+                    } else {
+                        lcdMain.innerText = "SEM VALOR A PAGAR";
+                    }
+                    break;
+
+                case 'Abre Gaveta':
+                case 'Sangria':
+                    lcdMain.innerText = keyName.toUpperCase();
+                    lcdSub.innerText = "Solicitação autorizada.";
+                    break;
+
+                default:
+                    lcdMain.innerText = keyName.toUpperCase();
+                    break;
+            }
+        }
+
+        // Manipulação de teclas do Pinpad Gertec
+        function pressNum(val) {
+            playBeep(1300, 0.03);
+
+            if (val === 'ANULA') {
+                inputBuffer = "";
+                lcdMain.innerText = "ENTRADA ANULADA";
+                lcdSub.innerText = "Digite novamente...";
+                return;
+            }
+
+            if (val === 'LIMPA') {
+                inputBuffer = inputBuffer.slice(0, -1);
+                lcdMain.innerText = inputBuffer || "0";
+                return;
+            }
+
+            if (val === 'ENTRA') {
+                if (inputBuffer.length > 0) {
+                    const parsed = parseFloat(inputBuffer.replace(',', '.')) || 0;
+                    currentTotal += parsed;
+                    lcdMain.innerText = "ITEM ADD: R$ " + formatMoney(parsed);
+                    lcdSub.innerText = "Total acumulado atualizado.";
+                    inputBuffer = "";
+                    updateDisplay();
+                } else {
+                    lcdMain.innerText = "DIGITE UM VALOR";
+                }
+                return;
+            }
+
+            if (val === 'CONSULTA') {
+                lcdMain.innerText = "CONSULTA PRODUTO";
+                lcdSub.innerText = "Passe o código no leitor";
+                return;
+            }
+
+            if (val === 'SUBTOTAL') {
+                lcdMain.innerText = "SUBTOTAL REGISTRADO";
+                lcdSub.innerText = "Aguardando pagamento...";
+                return;
+            }
+
+            if (val === 'MENU_FINAL') {
+                lcdMain.innerText = "FINALIZAR VENDA";
+                lcdSub.innerText = "Escolha a forma de pagamento";
+                return;
+            }
+
+            // Entrada numérico normal
+            if (inputBuffer.length < 10) {
+                inputBuffer += val;
+                lcdMain.innerText = "ENTRADA: " + inputBuffer;
+                lcdSub.innerText = "Pressione ENTRA para confirmar";
+            }
+        }
+
+        function updateDisplay() {
+            lcdTotal.innerText = formatMoney(currentTotal);
+        }
+
+        // Suporte a teclado físico do computador
+        window.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                pressNum(e.key);
+            } else if (e.key === 'Enter') {
+                pressNum('ENTRA');
+            } else if (e.key === 'Backspace') {
+                pressNum('LIMPA');
+            } else if (e.key === 'Escape') {
+                pressNum('ANULA');
+            } else if (e.key === ',') {
+                pressNum(',');
+            }
+        });
+    </script>
+</body>
+</html>
