@@ -1,5 +1,99 @@
-<!DOCTYPE html><html lang="pt-BR"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Sistema PDV - Supribem</title>    <!-- Font Awesome Icons -->    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    <!-- Google Fonts -->    <link rel="preconnect" href="https://fonts.googleapis.com">    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">    <script src="https://cdn.tailwindcss.com"></script>    <script>        tailwind.config = {            theme: {                extend: {                    colors: {                        'pdv-purple': '#2e0835',                        'pdv-dark-purple': '#1e0423',                        'pdv-light-purple': '#481352',                        'pdv-cream': '#fffbf0',                        'pdv-pill': '#f3f0e6',                        'pdv-border-red': '#8c2637',                        'pdv-logo-orange': '#bd4f24'                    },                    fontFamily: {                        sans: ['Ubuntu', 'sans-serif'],                        receipt: ['Courier Prime', 'monospace']                    }                }            }        }    </script>    <style>        body, html {            height: 100%;            margin: 0;            overflow: hidden;            user-select: none;            background-color: #1e0423;            color: white;            font-family: 'Ubuntu', sans-serif;        }        /* Background blur overlay simulating supermarket aisle */        .aisle-bg {            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(46, 8, 53, 0.85)), url('https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200&auto=format&fit=crop');            background-size: cover;            background-position: center;        }        /* Custom Capsule Inputs */        .capsule-input {            background-color: #f3f0e8;            border-radius: 9999px;            color: #222222;            font-weight: 700;            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(255,255,255,0.2);            transition: all 0.15s ease-in-out;        }        .capsule-input:focus-within {            outline: 3px solid #ffcc00;            background-color: #ffffff;        }        .capsule-input input {            background: transparent;            outline: none;            color: #111;            font-weight: bold;        }        /* Logo Oval Frame */        .logo-ellipse {            background: radial-gradient(circle, #222 0%, #111 100%);            border: 6px solid #d35400;            border-radius: 50% / 50%;            box-shadow: 0 4px 15px rgba(0,0,0,0.6);            transform: rotate(-3deg);        }        /* Custom Scrollbar for Receipt Paper */        .receipt-scroll::-webkit-scrollbar {            width: 8px;        }        .receipt-scroll::-webkit-scrollbar-track {            background: #f7f3e6;            border-radius: 4px;        }        .receipt-scroll::-webkit-scrollbar-thumb {            background: #c2bba8;            border-radius: 4px;        }        /* Pulse highlight animation for new scanned items */        @keyframes itemFlash {            0% { background-color: #ffe680; }            100% { background-color: transparent; }        }        .item-row-new {            animation: itemFlash 0.8s ease-out;        }    </style></head><body class="flex flex-col h-screen text-white select-none">
-    <!-- TAG DO ÁUDIO DO BIP -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema PDV - Supribem</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pdv-purple': '#2e0835',
+                        'pdv-dark-purple': '#1e0423',
+                        'pdv-light-purple': '#481352',
+                        'pdv-cream': '#fffbf0',
+                        'pdv-pill': '#f3f0e6',
+                        'pdv-border-red': '#8c2637',
+                        'pdv-logo-orange': '#bd4f24'
+                    },
+                    fontFamily: {
+                        sans: ['Ubuntu', 'sans-serif'],
+                        receipt: ['Courier Prime', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            background-color: #1e0423;
+            color: white;
+            font-family: 'Ubuntu', sans-serif;
+        }
+        .aisle-bg {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(46, 8, 53, 0.85)), url('https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .capsule-input {
+            background-color: #f3f0e8;
+            border-radius: 9999px;
+            color: #222222;
+            font-weight: 700;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(255,255,255,0.2);
+            transition: all 0.15s ease-in-out;
+        }
+        .capsule-input:focus-within {
+            outline: 3px solid #ffcc00;
+            background-color: #ffffff;
+        }
+        .capsule-input input {
+            background: transparent;
+            outline: none;
+            color: #111;
+            font-weight: bold;
+        }
+        .logo-ellipse {
+            background: radial-gradient(circle, #222 0%, #111 100%);
+            border: 6px solid #d35400;
+            border-radius: 50% / 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            transform: rotate(-3deg);
+        }
+        .receipt-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .receipt-scroll::-webkit-scrollbar-track {
+            background: #f7f3e6;
+            border-radius: 4px;
+        }
+        .receipt-scroll::-webkit-scrollbar-thumb {
+            background: #c2bba8;
+            border-radius: 4px;
+        }
+        @keyframes itemFlash {
+            0% { background-color: #ffe680; }
+            100% { background-color: transparent; }
+        }
+        .item-row-new {
+            animation: itemFlash 0.8s ease-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen text-white select-none">
+    <!-- AUDIO -->
     <audio id="audio-bip" src="bip.mp3" preload="auto"></audio>
 
     <!-- TOP BAR -->
@@ -20,7 +114,6 @@
             <div class="flex items-center space-x-1">
                 <span class="text-gray-300">NFC-e Cupom</span>
             </div>
-            <!-- Top Wide Pill Bar -->
             <div class="capsule-input px-4 py-1.5 w-64 md:w-96 flex items-center justify-between">
                 <span class="text-gray-500 font-normal text-xs">Consulta / Status:</span>
                 <span id="status-caixa-topo" class="text-red-700 text-xs font-bold uppercase tracking-wider flex items-center">
@@ -34,7 +127,6 @@
     <div class="flex-1 grid grid-cols-12 gap-3 p-3 bg-pdv-dark-purple overflow-hidden">
         <!-- LEFT COLUMN (LOGO & TOTALS) -->
         <div class="col-span-4 flex flex-col justify-between aisle-bg p-4 rounded-xl border border-purple-950 shadow-2xl relative overflow-hidden">
-            <!-- BRAND LOGO BADGE -->
             <div class="flex justify-center my-2">
                 <div class="logo-ellipse w-full max-w-[280px] py-4 px-6 text-center transform transition hover:scale-105 duration-200 cursor-pointer" onclick="verificarAberturaOuFocar()">
                     <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-sans" style="font-family: Arial Black, sans-serif;">
@@ -48,7 +140,6 @@
 
             <!-- FINANCIAL SUMMARY CARDS -->
             <div class="space-y-4 my-auto w-full px-2">
-                <!-- ROW 1: TOTAL DA COMPRA + PAGAMENTO -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">TOTAL DA COMPRA</label>
@@ -61,12 +152,12 @@
                         <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">PAGAMENTO</label>
                         <div class="capsule-input px-3 py-2 text-center text-xl md:text-2xl font-extrabold text-gray-900 shadow-md flex items-center justify-center">
                             <span class="text-xs font-semibold text-gray-500 mr-1">R$</span>
-                            <input id="input-pagamento" type="number" step="0.01" class="w-full text-center capsule-input p-0 border-none focus:ring-0 text-xl md:text-2xl" placeholder="0,00" oninput="calculateChange()">
+                            <!-- CAMPO DE PAGAMENTO SOMENTE LEITURA -->
+                            <input id="input-pagamento" type="text" readonly class="w-full text-center capsule-input p-0 border-none focus:ring-0 text-xl md:text-2xl bg-transparent text-gray-900" placeholder="0,00">
                         </div>
                     </div>
                 </div>
 
-                <!-- ROW 2: RESTANTE + TROCO -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-center text-xs font-bold tracking-wider mb-1 uppercase drop-shadow text-gray-100">RESTANTE</label>
@@ -85,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- LOWER EXTRA WIDE CAPSULE FIELD -->
             <div class="mt-4 px-2">
                 <div class="capsule-input px-4 py-2 text-center text-xs font-bold text-gray-700 shadow-lg border border-gray-300 flex items-center justify-between">
                     <span id="status-message" class="truncate">CAIXA FECHADO - PRESSIONE F1 PARA ABRIR</span>
@@ -94,19 +184,17 @@
             </div>
         </div>
 
-        <!-- RIGHT COLUMN (SCANNER INPUTS & RECEIPT PAPER) -->
+        <!-- RIGHT COLUMN -->
         <div class="col-span-8 flex flex-col space-y-3">
-            <!-- TOP INPUT SCANNER BAR -->
             <div class="bg-pdv-purple p-3 rounded-xl border border-purple-900 shadow-lg flex items-center justify-between space-x-2 text-xs font-bold">
-                <!-- BARCODE / CODIGO INPUT -->
                 <div class="flex-1 flex flex-col">
                     <label class="mb-1 text-gray-200 tracking-wider">CÓDIGO</label>
                     <div class="capsule-input px-3 py-1.5 flex items-center space-x-2">
                         <i class="fa-solid fa-barcode text-gray-700 text-xl"></i>
-                        <input id="input-codigo" type="text" class="w-full text-base font-mono uppercase tracking-wider" placeholder="Código ou Barcode" autocomplete="off" disabled>
+                        <!-- CAMPO DE CÓDIGO RESTRITO A NÚMEROS, PONTO E ASTERISCO -->
+                        <input id="input-codigo" type="text" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9*.]/g, '')" class="w-full text-base font-mono uppercase tracking-wider" placeholder="Código ou Barcode" autocomplete="off" disabled>
                     </div>
                 </div>
-                <!-- QTD / PESO -->
                 <div class="w-24 flex flex-col">
                     <label class="mb-1 text-center text-gray-200">QTD/PESO</label>
                     <div class="capsule-input px-2 py-1.5 text-center">
@@ -114,7 +202,6 @@
                     </div>
                 </div>
                 <div class="text-xl font-black text-gray-300 self-end pb-2">X</div>
-                <!-- PREÇO -->
                 <div class="w-28 flex flex-col">
                     <label class="mb-1 text-center text-gray-200">PREÇO</label>
                     <div class="capsule-input px-2 py-1.5 text-center">
@@ -122,7 +209,6 @@
                     </div>
                 </div>
                 <div class="text-xl font-black text-gray-300 self-end pb-2">=</div>
-                <!-- TOTAL ITEM -->
                 <div class="w-32 flex flex-col">
                     <label class="mb-1 text-center text-gray-200">TOTAL</label>
                     <div class="capsule-input px-3 py-1.5 text-center bg-gray-200">
@@ -131,9 +217,7 @@
                 </div>
             </div>
 
-            <!-- RECEIPT PAPER DISPLAY SHEET -->
             <div class="flex-1 bg-pdv-cream text-gray-900 rounded-2xl p-4 shadow-2xl border-4 border-pdv-purple flex flex-col justify-between font-receipt relative overflow-hidden">
-                <!-- PAPER HEADER -->
                 <div class="pb-2 border-b-2 border-pdv-border-red">
                     <div class="flex justify-between items-center text-xs font-bold text-pdv-border-red uppercase tracking-wider mb-1">
                         <span>ITEM &nbsp; CÓDIGO &nbsp; DESCRIÇÃO</span>
@@ -141,16 +225,13 @@
                     </div>
                     <div class="w-full border-t border-dashed border-pdv-border-red my-1"></div>
                 </div>
-                <!-- RECEIPT ITEMS LIST CONTAINER -->
                 <div id="receipt-items-container" class="flex-1 overflow-y-auto receipt-scroll py-2 space-y-1 text-xs md:text-sm font-semibold">
-                    <!-- Items inserted dynamically via JavaScript -->
                     <div id="empty-receipt-msg" class="h-full flex flex-col items-center justify-center text-gray-400 italic">
                         <i class="fa-solid fa-lock text-4xl mb-2 text-red-500"></i>
                         <span class="font-bold text-red-700">CAIXA FECHADO</span>
                         <span class="text-xs text-gray-500 mt-1">Pressione F1 para realizar a abertura de caixa</span>
                     </div>
                 </div>
-                <!-- PAPER FOOTER / DIVIDER LINES -->
                 <div class="pt-2 border-t-2 border-pdv-border-red mt-auto">
                     <div class="flex justify-between text-xs font-bold text-pdv-border-red">
                         <span id="items-count-label">TOTAL DE ITENS: 0</span>
@@ -165,7 +246,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM STATUS BAR -->
+    <!-- FOOTER -->
     <footer class="bg-pdv-purple border-t border-purple-900 px-3 py-2 text-[11px] md:text-xs text-gray-200 flex flex-wrap items-center justify-between gap-y-1">
         <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
             <i class="fa-solid fa-user-tie text-purple-300 text-sm mr-1"></i>
@@ -177,17 +258,17 @@
             <span class="font-bold">POV / ESTAÇÃO:</span>
             <span>01 / 004</span>
         </div>
-        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3 cursor-pointer hover:text-yellow-300" onclick="simulateSync('GERAL')">
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
             <i class="fa-solid fa-cart-shopping text-purple-300 text-sm mr-1"></i>
             <span class="font-bold">CARGA GERAL:</span>
             <span id="carga-geral-status" class="text-green-400">OK</span>
         </div>
-        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3 cursor-pointer hover:text-yellow-300" onclick="simulateSync('PARCIAL')">
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
             <i class="fa-solid fa-database text-purple-300 text-sm mr-1"></i>
             <span class="font-bold">CARGA PARCIAL:</span>
             <span class="text-green-400">OK</span>
         </div>
-        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3 cursor-pointer hover:text-yellow-300" onclick="simulateSync('CONFIG')">
+        <div class="flex items-center space-x-1 border-r border-purple-800 pr-3">
             <i class="fa-solid fa-gear text-purple-300 text-sm mr-1"></i>
             <span class="font-bold">CARGA CONFIG:</span>
             <span class="text-green-400">OK</span>
@@ -209,17 +290,16 @@
         </div>
     </footer>
 
-    <!-- MODAL FOR PRODUCT HELP / SHORTCUTS -->
+    <!-- MODAL DE AJUDA -->
     <div id="modal-help" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden z-50">
         <div class="bg-pdv-purple border-2 border-yellow-400 rounded-2xl max-w-lg w-full p-6 text-white shadow-2xl">
             <div class="flex justify-between items-center border-b border-purple-800 pb-3 mb-4">
                 <h3 class="text-lg font-bold text-yellow-400 flex items-center">
-                    <i class="fa-solid fa-basket-shopping mr-2"></i> Produtos de Teste (Atalhos)
+                    <i class="fa-solid fa-basket-shopping mr-2"></i> Produtos de Teste & Atalhos
                 </h3>
                 <button onclick="toggleHelpModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
             </div>
-            <p class="text-xs text-gray-300 mb-3">Digite qualquer um dos códigos abaixo ou simule a leitura de código de barras:</p>
-            <div class="space-y-2 mb-6 max-h-60 overflow-y-auto pr-1">
+            <div class="space-y-2 mb-6 max-h-48 overflow-y-auto pr-1">
                 <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001001')">
                     <span class="font-mono text-yellow-300">78910001001</span>
                     <span class="font-bold">ARROZ TIPO 1 5KG</span>
@@ -230,16 +310,6 @@
                     <span class="font-bold">FEIJÃO CARIOCA 1KG</span>
                     <span class="text-green-400 font-bold">R$ 7,50</span>
                 </div>
-                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001003')">
-                    <span class="font-mono text-yellow-300">78910001003</span>
-                    <span class="font-bold">LEITE INTEGRAL 1L</span>
-                    <span class="text-green-400 font-bold">R$ 4,89</span>
-                </div>
-                <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('78910001004')">
-                    <span class="font-mono text-yellow-300">78910001004</span>
-                    <span class="font-bold">ÓLEO DE SOJA 900ML</span>
-                    <span class="text-green-400 font-bold">R$ 6,29</span>
-                </div>
                 <div class="flex justify-between bg-purple-950 p-2 rounded border border-purple-800 text-xs cursor-pointer hover:bg-purple-900" onclick="quickAdd('9')">
                     <span class="font-mono text-yellow-300">9</span>
                     <span class="font-bold">CEBOLA BRANCA KG</span>
@@ -247,14 +317,14 @@
                 </div>
             </div>
             <div class="bg-purple-950 p-3 rounded-lg border border-purple-800 text-xs space-y-1 mb-4">
-                <p class="font-bold text-yellow-400">Atalhos do Teclado:</p>
+                <p class="font-bold text-yellow-400">Atalhos de Pagamento e Sistema:</p>
                 <div class="grid grid-cols-2 gap-1 text-gray-300">
-                    <div><b class="text-white">F1:</b> Abertura de Caixa</div>
-                    <div><b class="text-white">F2:</b> Lista de Produtos</div>
-                    <div><b class="text-white">F4 / Enter Pagto:</b> Finalizar Venda</div>
-                    <div><b class="text-white">F8:</b> Cancelar Último Item</div>
-                    <div><b class="text-white">Esc / F12:</b> Novo Cupom</div>
-                    <div><b class="text-white">Multiplicar/Peso:</b> Ex: <code class="bg-purple-900 px-1 text-yellow-300">0.500*9</code></div>
+                    <div><b class="text-white">Espaço:</b> Dinheiro</div>
+                    <div><b class="text-white">C:</b> Cartão de Crédito</div>
+                    <div><b class="text-white">D:</b> Cartão de Débito</div>
+                    <div><b class="text-white">P:</b> PIX</div>
+                    <div><b class="text-white">F1:</b> Abrir Caixa</div>
+                    <div><b class="text-white">F2:</b> Esta Ajuda</div>
                 </div>
             </div>
             <button onclick="toggleHelpModal()" class="w-full py-2 bg-yellow-500 hover:bg-yellow-400 text-purple-950 font-bold rounded-lg transition">
@@ -265,7 +335,6 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // MOCK PRODUCT DATABASE
         const productsDB = {
             '78910001001': { name: 'ARROZ TIPO 1 5KG', price: 26.90 },
             '78910001002': { name: 'FEIJÃO CARIOCA 1KG', price: 7.50 },
@@ -274,52 +343,15 @@
             '1': { name: 'ABACATE KG', price: 8.49 },
             '2': { name: 'ABACAXI UN', price: 8.99 },
             '4': { name: 'ALHO KG', price: 24.90 },
-            '3': { name: 'ALFACE KG', price: 4.50 },
-            '7': { name: 'BANANA PRATA KG', price: 7.20 },
-            '8': { name: 'BETERRABA KG', price: 6.50 },
-            '9': { name: 'CEBOLA BRANCA KG', price: 5.99 },
-            '10': { name: 'CEBOLA ROCHA KG', price: 6.99 },
-            '19': { name: 'LIMÃO TAITI KG', price: 4.50 },
-            '18': { name: 'LARANJA KG', price: 4.89 },
-            '20': { name: 'MACAXEIRA KG', price: 6.20 },
-            '25': { name: 'INHAME KG', price: 9.50 },
-            '31': { name: 'TOMATE', price: 13.49 },
-             '38': { name: 'PERA KG', price: 13.49 },
-            '14': { name: 'COCO SECO UN', price: 4.50 },
-            '15': { name: 'COCO VERDE UN', price: 4.00 },
-            '12': { name: 'COENTRO UN', price: 2.50 },
-            '56': { name: 'CEBOLINHA UN', price: 2.50 },
-            '13': { name: 'CHUCHU KG', price: 5.00 },
-            '21': { name: 'MAMÃO FORMOSA', price: 6.50 },
-            '21': { name: 'MAMÃO FORMOSA', price: 6.50 },
-            '23': { name: 'MARACUJA', price: 6.50 },
-            '34': { name: 'PIMENTÃO KG', price: 8.99 },
-             '37': { name: 'TANGERINA KG', price: 8.99 },
-            '49': { name: 'MAÇÃ NACIONAL KG', price: 11.99 },
-            '71': { name: 'COUVE MANTEGA UN', price: 3.00 },
-            '91': { name: 'GENGIBRE UN', price: 7.50 },
-            '66': { name: 'MANGA TOMY KG', price: 6.79 },
-            '26': { name: 'MANGA COITE / MOSCATEL KG', price: 6.50 },
-            '29': { name: 'MELÃO KG', price: 7.99 },
-            '154': { name: 'KIABO KG', price: 5.99 },
-            '5528': { name: 'KIABO KG', price: 5.99 },
-            '57': { name: 'MEÃO ESPANHOU KG', price: 5.99 },
-            '84': { name: 'ROMÃ KG', price: 23.00 },
-            '55': { name: 'ATA KG', price: 22.29 },
-            '861': { name: 'ABOBRINHA', price: 6.50 },
-             '309': { name: 'JILO', price: 6.50 },
-            '36': { name: 'SAPOTI KG', price: 7.50 }
+            '9': { name: 'CEBOLA BRANCA KG', price: 5.99 }
         };
 
-        // STATE VARIABLES
         let caixaAberto = false;
         let fundoTroco = 0.00;
         let operadorLogado = "";
         let currentCart = [];
         let totalAmount = 0.00;
-        let cooNumber = 84920;
 
-        // DOM ELEMENTS
         const clockEl = document.getElementById('live-clock');
         const inputCodigo = document.getElementById('input-codigo');
         const inputQtd = document.getElementById('input-qtd');
@@ -337,28 +369,32 @@
         const statusCaixaTopo = document.getElementById('status-caixa-topo');
         const statusIconLock = document.getElementById('status-icon-lock');
         const footerOperador = document.getElementById('footer-operador');
+        const helpModal = document.getElementById('modal-help');
 
-        // CLOCK FUNCTION
         function updateClock() {
             const now = new Date();
-            const dateStr = now.toLocaleDateString('pt-BR');
-            const timeStr = now.toLocaleTimeString('pt-BR');
-            clockEl.textContent = `${dateStr} ${timeStr}`;
+            clockEl.textContent = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // FORMAT CURRENCY
         function formatBRL(val) {
             return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // FORMAT QTD/PESO
         function formatQtd(val) {
             return Number.isInteger(val) ? val.toString() : val.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
         }
 
-        // FUNÇÃO DE ABERTURA DE CAIXA (PROMPT)
+        function toggleHelpModal() {
+            helpModal.classList.toggle('hidden');
+        }
+
+        function quickAdd(code) {
+            processBarcode(code);
+            helpModal.classList.add('hidden');
+        }
+
         function abrirCaixa() {
             if (caixaAberto) {
                 alert("O caixa já se encontra aberto!");
@@ -366,7 +402,7 @@
             }
 
             let senhaInformada = prompt("--- ABERTURA DE CAIXA ---\nDigite a senha do operador:");
-            if (senhaInformada === null) return; // Cancelou
+            if (senhaInformada === null) return;
 
             if (senhaInformada !== "031498") {
                 alert("❌ Senha incorreta! Acesso negado.");
@@ -374,69 +410,47 @@
             }
 
             let fundoInformado = prompt("Digite o valor do fundo de troco inicial (Ex: 50.00):", "50.00");
-            if (fundoInformado === null) return; // Cancelou
+            if (fundoInformado === null) return;
 
-            let valorTroco = parseFloat(fundoInformado.replace(',', '.')) || 0;
-
-            // Caixa Aberto com Sucesso
             caixaAberto = true;
-            fundoTroco = valorTroco;
+            fundoTroco = parseFloat(fundoInformado.replace(',', '.')) || 0;
             operadorLogado = "001 - Gleison";
 
-            // Atualiza Interface Superior
             statusCaixaTopo.className = "text-green-700 text-xs font-bold uppercase tracking-wider flex items-center";
             statusCaixaTopo.innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> CAIXA ABERTO`;
-
-            // Atualiza Rodapé e Status Bar
             footerOperador.textContent = operadorLogado;
             statusMessage.textContent = `CAIXA ABERTO - FUNDO DE TROCO: R$ ${formatBRL(fundoTroco)}`;
             statusIconLock.className = "fa-solid fa-lock-open text-green-500 text-lg";
 
-            // Libera campo de código de barras
             inputCodigo.disabled = false;
             inputCodigo.focus();
-
-            // Atualiza Mensagem do Cupom
             renderReceipt();
         }
 
         function verificarAberturaOuFocar() {
-            if (!caixaAberto) {
-                abrirCaixa();
+            if (!caixaAberto) abrirCaixa();
+            else inputCodigo.focus();
+        }
+
+        function calculateChange() {
+            const pag = parseFloat(inputPagamento.value.replace(/\./g, '').replace(',', '.')) || 0;
+            const diff = pag - totalAmount;
+
+            if (diff >= 0) {
+                dispTroco.textContent = formatBRL(diff);
+                dispRestante.textContent = "0,00";
             } else {
-                inputCodigo.focus();
+                dispTroco.textContent = "0,00";
+                dispRestante.textContent = formatBRL(Math.abs(diff));
             }
         }
 
-        // FUNÇÃO DE SOM DO BIP
-        function tocarSomBeepLocal() {
-            const audioBip = document.getElementById('audio-bip');
-            if (audioBip) {
-                audioBip.currentTime = 0;
-                audioBip.play().catch(error => {
-                    console.log("Aguardando interação...", error);
-                });
-            }
-        }
-
-        window.addEventListener('click', () => {
-            const audio = document.getElementById('audio-bip');
-            if (audio) {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(() => {});
-            }
-        }, { once: true });
-
-        // SCAN / ADD ITEM
         function processBarcode(rawCode) {
             if (!caixaAberto) {
                 alert("Caixa Fechado! Pressione F1 para abrir o caixa.");
                 abrirCaixa();
                 return;
             }
-
             if (!rawCode) return;
 
             let qty = parseFloat(inputQtd.value.replace(',', '.')) || 1;
@@ -448,27 +462,19 @@
                 code = parts[1].trim();
             }
 
-            let product = productsDB[code];
-            if (!product) {
-                product = {
-                    name: `PRODUTO GENÉRICO (${code})`,
-                    price: 9.99
-                };
-            }
+            let product = productsDB[code] || { name: `PRODUTO GENÉRICO (${code})`, price: 9.99 };
 
             inputPreco.value = formatBRL(product.price);
             const itemTotal = Math.round((product.price * qty) * 100) / 100;
             dispItemTotal.textContent = formatBRL(itemTotal);
 
             const isKg = product.name.toUpperCase().includes('KG') || !Number.isInteger(qty);
-            const unitLabel = isKg ? 'KG' : 'UN';
-
             const newItem = {
                 id: currentCart.length + 1,
                 code: code,
                 name: product.name,
                 qty: qty,
-                unitLabel: unitLabel,
+                unitLabel: isKg ? 'KG' : 'UN',
                 unitPrice: product.price,
                 total: itemTotal
             };
@@ -478,30 +484,15 @@
 
             inputCodigo.value = '';
             inputQtd.value = '1';
-
             statusMessage.textContent = `ITEM ADICIONADO: ${product.name}`;
             setTimeout(() => inputCodigo.focus(), 50);
         }
 
-        // RENDER RECEIPT PAPER
         function renderReceipt() {
-            if (!caixaAberto) {
+            if (!caixaAberto || currentCart.length === 0) {
                 receiptContainer.innerHTML = '';
                 receiptContainer.appendChild(emptyReceiptMsg);
                 emptyReceiptMsg.classList.remove('hidden');
-                totalAmount = 0;
-                return;
-            }
-
-            if (currentCart.length === 0) {
-                receiptContainer.innerHTML = '';
-                receiptContainer.appendChild(emptyReceiptMsg);
-                emptyReceiptMsg.classList.remove('hidden');
-                emptyReceiptMsg.innerHTML = `
-                    <i class="fa-solid fa-basket-shopping text-4xl mb-2 text-amber-200"></i>
-                    <span>Nenhum item registrado no cupom</span>
-                    <span class="text-xs text-gray-400 mt-1">Pressione F2 para ver lista de códigos de teste</span>
-                `;
                 totalAmount = 0;
             } else {
                 emptyReceiptMsg.classList.add('hidden');
@@ -510,7 +501,6 @@
                 totalAmount = 0;
                 currentCart.forEach((item, index) => {
                     totalAmount += item.total;
-
                     const row = document.createElement('div');
                     row.className = 'flex justify-between items-center py-1 border-b border-gray-200/50 hover:bg-amber-100/50 px-1 rounded transition item-row-new';
                     row.innerHTML = `
@@ -526,153 +516,82 @@
                     `;
                     receiptContainer.appendChild(row);
                 });
-
-                receiptContainer.scrollTop = receiptContainer.scrollHeight;
             }
 
             dispTotalCompra.textContent = formatBRL(totalAmount);
             receiptSubtotal.textContent = `R$ ${formatBRL(totalAmount)}`;
             itemsCountLabel.textContent = `TOTAL DE ITENS: ${currentCart.length}`;
-
             calculateChange();
         }
 
-        // CALCULATE CHANGE (NÓS SÓ MOSTRARAMOS RESTANTE E TROCO SE TIVER DIGITAÇÃO NO PAGAMENTO)
-        function calculateChange() {
-            const rawPagamento = inputPagamento.value.trim();
-            const pagamento = parseFloat(rawPagamento) || 0;
-
-            if (rawPagamento === '' || pagamento === 0) {
-                dispRestante.textContent = "0,00";
-                dispTroco.textContent = "0,00";
-                return;
-            }
-
-            const restante = totalAmount - pagamento;
-
-            if (restante > 0) {
-                dispRestante.textContent = formatBRL(restante);
-                dispTroco.textContent = "0,00";
-            } else {
-                dispRestante.textContent = "0,00";
-                dispTroco.textContent = formatBRL(Math.abs(restante));
-            }
-        }
-
-        // FINALIZE SALE
-        function finalizeSale() {
-            if (!caixaAberto) return;
-
-            if (currentCart.length === 0) {
-                alert('O cupom está vazio! Adicione itens antes de finalizar.');
-                return;
-            }
-
-            const pagamento = parseFloat(inputPagamento.value) || 0;
-            if (pagamento < totalAmount && totalAmount > 0) {
-                if (!confirm(`O valor pago (R$ ${formatBRL(pagamento)}) é menor que o total (R$ ${formatBRL(totalAmount)}). Deseja concluir mesmo assim?`)) {
-                    return;
-                }
-            }
-
-            cooNumber++;
-            document.getElementById('coo-val').textContent = String(cooNumber).padStart(6, '0');
-
-            alert(`✅ VENDA FINALIZADA COM SUCESSO!\n\nCupom COO: ${cooNumber}\nTotal: R$ ${formatBRL(totalAmount)}\nTroco: R$ ${dispTroco.textContent}`);
-
-            currentCart = [];
-            inputPagamento.value = '';
-            inputPreco.value = '';
-            dispItemTotal.textContent = '0,00';
-            statusMessage.textContent = 'CAIXA ABERTO - PRONTO PARA VENDAS';
-            renderReceipt();
-            inputCodigo.focus();
-        }
-
-        // CANCEL LAST ITEM
-        function cancelLastItem() {
-            if (!caixaAberto) return;
-            if (currentCart.length > 0) {
-                const removed = currentCart.pop();
-                statusMessage.textContent = `ITEM CANCELADO: ${removed.name}`;
-                renderReceipt();
-            }
-        }
-
-        // TOGGLE HELP MODAL
-        function toggleHelpModal() {
-            const modal = document.getElementById('modal-help');
-            modal.classList.toggle('hidden');
-        }
-
-        // QUICK ADD FROM MODAL
-        function quickAdd(code) {
-            if (!caixaAberto) {
-                alert("Abra o caixa primeiro pressionando F1.");
-                toggleHelpModal();
-                abrirCaixa();
-                return;
-            }
-            processBarcode(code);
-            toggleHelpModal();
-        }
-
-        // SIMULATE SYNC
-        function simulateSync(type) {
-            statusMessage.textContent = `EXECUTANDO CARGA ${type}... AGUARDE`;
-            setTimeout(() => {
-                statusMessage.textContent = `CARGA ${type} CONCLUÍDA COM SUCESSO!`;
-            }, 800);
-        }
-
-        // KEYBOARD SHORTCUTS HANDLER
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F1') {
-                e.preventDefault();
-                abrirCaixa();
-            } else if (e.key === 'F2') {
-                e.preventDefault();
-                toggleHelpModal();
-            } else if (e.key === 'F4') {
-                e.preventDefault();
-                finalizeSale();
-            } else if (e.key === 'F8') {
-                e.preventDefault();
-                cancelLastItem();
-            } else if (e.key === 'Escape') {
-                const modal = document.getElementById('modal-help');
-                if (!modal.classList.contains('hidden')) {
-                    toggleHelpModal();
-                } else if (caixaAberto) {
-                    inputCodigo.focus();
-                }
-            }
-        });
-
-        // INPUT EVENT LISTENERS
         inputCodigo.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
-                tocarSomBeepLocal();
                 processBarcode(inputCodigo.value);
             }
         });
 
-        inputPagamento.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                finalizeSale();
+        // ESCUTA GLOBAL DE ATALHOS DO TECLADO
+        window.addEventListener('keydown', function(event) {
+            const activeElem = document.activeElement;
+            const tecla = event.key.toLowerCase();
+
+            if (event.key === 'F2') {
+                event.preventDefault();
+                toggleHelpModal();
+                return;
+            }
+            if (event.key === 'Escape') {
+                helpModal.classList.add('hidden');
+                return;
+            }
+            if (event.key === 'F1') {
+                event.preventDefault();
+                abrirCaixa();
+                return;
+            }
+
+            if (!caixaAberto) return;
+
+            if (activeElem === inputCodigo || activeElem === inputQtd) {
+                if (event.code !== 'Space') return;
+            }
+
+            let formaPagamento = '';
+            let acaoRealizada = false;
+
+            if (tecla === 'c') {
+                formaPagamento = 'Cartão de Crédito';
+                acaoRealizada = true;
+            } else if (tecla === 'd') {
+                formaPagamento = 'Cartão de Débito';
+                acaoRealizada = true;
+            } else if (tecla === 'p') {
+                formaPagamento = 'PIX';
+                acaoRealizada = true;
+            } else if (event.code === 'Space') {
+                if (activeElem.tagName !== 'INPUT') event.preventDefault();
+                formaPagamento = 'Dinheiro';
+                acaoRealizada = true;
+            }
+
+            if (acaoRealizada) {
+                let valorDigitado = prompt(
+                    `FORMA DE PAGAMENTO: [${formaPagamento.toUpperCase()}]\nTotal da Compra: R$ ${formatBRL(totalAmount)}\n\nDigite o valor pago pelo cliente:`,
+                    totalAmount > 0 ? totalAmount.toFixed(2) : "0.00"
+                );
+
+                if (valorDigitado !== null) {
+                    let numValor = parseFloat(valorDigitado.replace(',', '.')) || 0;
+                    inputPagamento.value = formatBRL(numValor);
+                    calculateChange();
+                    
+                    statusMessage.textContent = `PAGAMENTO EM ${formaPagamento.toUpperCase()}: R$ ${formatBRL(numValor)}`;
+
+                    // EXIBE O ALERT COM O RESUMO DO PAGAMENTO
+                    alert(`=== COMPROVANTE DE PAGAMENTO ===\nForma: ${formaPagamento}\nTotal da Compra: R$ ${formatBRL(totalAmount)}\nValor Pago: R$ ${formatBRL(numValor)}`);
+                }
             }
         });
-
-        window.addEventListener('click', (e) => {
-            if (!e.target.closest('input') && !e.target.closest('button') && caixaAberto) {
-                inputCodigo.focus();
-            }
-        });
-
-        
-        
     </script>
 </body>
 </html>
