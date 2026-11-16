@@ -136,10 +136,10 @@
     window.addEventListener('keydown', function (event) {
         if (event.repeat) return;
 
-        if (event.key === 'F4') {
+        if (event.key === 'q') {
             event.preventDefault();
             cancelarItem();
-        } else if (event.key === 'F8') {
+        } else if (event.key === 'w') {
             event.preventDefault();
             cancelarCupom();
         }
