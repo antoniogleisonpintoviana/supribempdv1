@@ -3,7 +3,7 @@
  * Arquivo: cancelamento-modulo.js
  * 
  * Controles:
- * - F4: Abre modal visual de Cancelamento de Item
+ * - Tecla Q: Abre modal visual de Cancelamento de Item
  *   - Seta Cima / Seta Baixo: Navega pela lista de itens
  *   - Tecla 9: Confirma o item selecionado e abre o campo de senha
  *   - ESC: Fecha a janela sem cancelar
@@ -16,7 +16,6 @@
     let indiceSelecionado = 0;
     let etapaSenha = false;
 
-    // Cria o modal visual dinamicamente no padrão de cores do PDV Supribem
     function criarModalCancelamento() {
         if (document.getElementById('modal-cancelar-item')) return;
 
@@ -99,7 +98,6 @@
                 </div>
             `;
 
-            // Permite também clicar com o mouse caso deseje
             row.addEventListener('click', () => {
                 indiceSelecionado = idx;
                 renderizarListaModal();
@@ -108,7 +106,6 @@
             container.appendChild(row);
         });
 
-        // Garante que o item destacado fique visível na rolagem
         const activeRow = document.getElementById(`cancel-row-${indiceSelecionado}`);
         if (activeRow) {
             activeRow.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -128,7 +125,6 @@
 
         criarModalCancelamento();
 
-        // Inicia selecionando o último item registrado
         indiceSelecionado = currentCart.length - 1;
         etapaSenha = false;
         modalAberto = true;
@@ -142,7 +138,6 @@
         const modal = document.getElementById('modal-cancelar-item');
         modal.classList.remove('hidden');
 
-        // Tira o foco do input-codigo para que a tecla 9 não seja digitada nele
         if (document.activeElement) {
             document.activeElement.blur();
         }
@@ -191,13 +186,11 @@
 
         const itemRemovido = currentCart[indiceSelecionado];
 
-        // Remove o item e reordena os IDs
         currentCart.splice(indiceSelecionado, 1);
         currentCart.forEach((item, idx) => {
             item.id = idx + 1;
         });
 
-        // Zera pagamento parcial caso já tenha sido lançado
         const inputPagamentoEl = document.getElementById('input-pagamento');
         if (inputPagamentoEl) inputPagamentoEl.value = '';
 
@@ -264,13 +257,10 @@
         if (inputCodigoEl) inputCodigoEl.focus();
     }
 
-    // Expõe globalmente
     window.cancelarItemPDV = abrirModalCancelarItem;
     window.cancelarCupomPDV = cancelarCupom;
 
-    // Intercepta as teclas em fase de captura para controlar o modal sem vazar teclas para o PDV
     window.addEventListener('keydown', function (event) {
-        // Se o modal de cancelamento de item estiver aberto, ele assume o controle total do teclado
         if (modalAberto) {
             if (event.key === 'Escape') {
                 event.preventDefault();
@@ -311,7 +301,6 @@
                 }
             }
 
-            // Bloqueia atalhos do PDV (A, C, D, P, Espaço) enquanto o modal estiver aberto
             if (event.key.toLowerCase() !== 'backspace' && !etapaSenha) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
@@ -321,10 +310,12 @@
 
         if (event.repeat) return;
 
-        if (event.key === 'q') {
+        // Tecla Q (maiúscula ou minúscula) abre o cancelamento de item
+        if (event.key.toLowerCase() === 'q') {
             event.preventDefault();
+            event.stopImmediatePropagation();
             abrirModalCancelarItem();
-        } else if (event.key === 'w') {
+        } else if (event.key === 'F8') {
             event.preventDefault();
             cancelarCupom();
         }
